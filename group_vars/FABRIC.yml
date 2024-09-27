@@ -1,0 +1,37 @@
+fabric_name: FABRIC
+
+bgp_peer_groups:
+  evpn_overlay_peers:
+    password: $1c$U4tL2vQP9QwZlxIV1K3/pw==
+  ipv4_underlay_peers:
+    password: $1c$U4tL2vQP9QwZlxIV1K3/pw==
+  mlag_ipv4_underlay_peer:
+    password: $1c$U4tL2vQP9QwZlxIV1K3/pw==
+
+internal_vlan_order:
+  allocation: ascending
+  range:
+    beginning: 3700
+    ending: 3900
+
+p2p_uplinks_mtu: 9100
+
+arp:
+  aging:
+    timeout_default: 900
+
+overlay_rd_type:
+  admin_subfield: overlay_loopback
+overlay_rt_type:
+  admin_subfield: 65000
+
+bgp_maximum_paths: 2
+bgp_ecmp: 2
+evpn_ebgp_multihop: 4
+
+evpn_prevent_readvertise_to_server: true
+
+bfd_multihop:
+  interval: 5000
+  min_rx: 5000
+  multiplier: 3
