@@ -1,0 +1,77 @@
+all:
+  children:
+    FABRIC:
+      children:
+        DC1:
+          children:
+            DC1_SPINES:
+              vars:
+                type: spine
+              hosts:
+                dc1-spine1:
+                  ansible_host: 10.0.0.1
+                dc1-spine2:
+                  ansible_host: 10.0.0.2
+            DC1_LEAFS:
+              vars:
+                type: l3leaf
+              hosts:
+                dc1-leaf1:
+                  ansible_host: 10.0.0.3
+                dc1-leaf2:
+                  ansible_host: 10.0.0.4
+                dc1-leaf3:
+                  ansible_host: 10.0.0.5
+                dc1-leaf4:
+                  ansible_host: 10.0.0.6
+        DC2:
+          children:
+            DC2_SPINES:
+              vars:
+                type: spine
+              hosts:
+                dc2-spine1:
+                  ansible_host: 10.0.0.7
+                dc2-spine2:
+                  ansible_host: 10.0.0.8
+            DC2_LEAFS:
+              vars:
+                type: l3leaf
+              hosts:
+                dc2-leaf1:
+                  ansible_host: 10.0.0.9
+                dc2-leaf2:
+                  ansible_host: 10.0.0.10
+                dc2-leaf3:
+                  ansible_host: 10.0.0.11
+                dc2-leaf4:
+                  ansible_host: 10.0.0.12
+    COMMON:
+      children:
+        DC1:
+        DC2:
+
+    TENANTS:
+      children:
+        DC1_LEAFS:
+        DC2_LEAFS:
+
+    DC1_LEAF1_2:
+      hosts:
+        dc1-leaf1:
+        dc1-leaf2:
+
+    DC1_LEAF3_4:
+      hosts:
+        dc1-leaf3:
+        dc1-leaf4:
+
+    DC2_LEAF1_2:
+      hosts:
+        dc2-leaf1:
+        dc2-leaf2:
+
+    DC2_LEAF3_4:
+      hosts:
+        dc2-leaf3:
+        dc2-leaf4:
