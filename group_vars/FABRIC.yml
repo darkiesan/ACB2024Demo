@@ -35,3 +35,63 @@ bfd_multihop:
   interval: 5000
   min_rx: 5000
   multiplier: 3
+
+l3_edge:
+  p2p_links_ip_pools:
+    - name: "DCI pool"
+      ipv4_pool: 10.0.11.0/24
+      prefix_size: 31
+
+  p2p_links_profiles:
+    - name: "DCI profile"
+      ip_pool: "DCI pool"
+      id: 1
+
+  p2p_links:
+    - nodes:
+        - dc1-leaf1
+        - dc2-leaf1
+      profile: "DCI profile"
+      interfaces:
+        - Ethernet51/1
+        - Ethernet51/1
+      as:
+        - 65001
+        - 65101
+      id: 1
+
+    - nodes:
+        - dc1-leaf1
+        - dc2-leaf2
+      profile: "DCI profile"
+      interfaces:
+        - Ethernet52/1
+        - Ethernet51/1
+      as:
+        - 65001
+        - 65101
+      id: 2
+
+    - nodes:
+        - dc1-leaf2
+        - dc2-leaf1
+      profile: "DCI profile"
+      interfaces:
+        - Ethernet51/1
+        - Ethernet52/1
+      as:
+        - 65001
+        - 65101
+      id: 3
+
+    - nodes:
+        - dc1-leaf2
+        - dc2-leaf2
+      profile: "DCI profile"
+      interfaces:
+        - Ethernet52/1
+        - Ethernet52/1
+      as:
+        - 65001
+        - 65101
+      id: 4

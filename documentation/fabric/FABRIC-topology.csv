@@ -6,6 +6,8 @@ l3leaf,dc1-leaf1,Ethernet47,server,FW01-Outside,NIC1,True
 l3leaf,dc1-leaf1,Ethernet48,server,FW01-Inside,NIC1,True
 l3leaf,dc1-leaf1,Ethernet49/1,spine,dc1-spine1,Ethernet1/1,True
 l3leaf,dc1-leaf1,Ethernet50/1,spine,dc1-spine2,Ethernet1/1,True
+l3leaf,dc1-leaf1,Ethernet51/1,l3leaf,dc2-leaf1,Ethernet51/1,True
+l3leaf,dc1-leaf1,Ethernet52/1,l3leaf,dc2-leaf2,Ethernet51/1,True
 l3leaf,dc1-leaf1,Ethernet55/1,mlag_peer,dc1-leaf2,Ethernet55/1,True
 l3leaf,dc1-leaf1,Ethernet56/1,mlag_peer,dc1-leaf2,Ethernet56/1,True
 l3leaf,dc1-leaf2,Ethernet1,server,KubernetesServer1,NIC2,True
@@ -15,6 +17,8 @@ l3leaf,dc1-leaf2,Ethernet47,server,FW01-Outside,NIC2,True
 l3leaf,dc1-leaf2,Ethernet48,server,FW01-Inside,NIC2,True
 l3leaf,dc1-leaf2,Ethernet49/1,spine,dc1-spine1,Ethernet2/1,True
 l3leaf,dc1-leaf2,Ethernet50/1,spine,dc1-spine2,Ethernet2/1,True
+l3leaf,dc1-leaf2,Ethernet51/1,l3leaf,dc2-leaf1,Ethernet52/1,True
+l3leaf,dc1-leaf2,Ethernet52/1,l3leaf,dc2-leaf2,Ethernet52/1,True
 l3leaf,dc1-leaf2,Ethernet55/1,mlag_peer,dc1-leaf1,Ethernet55/1,True
 l3leaf,dc1-leaf2,Ethernet56/1,mlag_peer,dc1-leaf1,Ethernet56/1,True
 l3leaf,dc1-leaf3,Ethernet49/1,spine,dc1-spine1,Ethernet3/1,True
@@ -40,6 +44,8 @@ l3leaf,dc2-leaf1,Ethernet47,server,FW02-Outside,NIC1,True
 l3leaf,dc2-leaf1,Ethernet48,server,FW02-Inside,NIC1,True
 l3leaf,dc2-leaf1,Ethernet49/1,spine,dc2-spine1,Ethernet1/1,True
 l3leaf,dc2-leaf1,Ethernet50/1,spine,dc2-spine2,Ethernet1/1,True
+l3leaf,dc2-leaf1,Ethernet51/1,l3leaf,dc1-leaf1,Ethernet51/1,True
+l3leaf,dc2-leaf1,Ethernet52/1,l3leaf,dc1-leaf2,Ethernet51/1,True
 l3leaf,dc2-leaf1,Ethernet55/1,mlag_peer,dc2-leaf2,Ethernet55/1,True
 l3leaf,dc2-leaf1,Ethernet56/1,mlag_peer,dc2-leaf2,Ethernet56/1,True
 l3leaf,dc2-leaf2,Ethernet1,server,KubernetesServer3,NIC2,True
@@ -49,6 +55,8 @@ l3leaf,dc2-leaf2,Ethernet47,server,FW02-Outside,NIC2,True
 l3leaf,dc2-leaf2,Ethernet48,server,FW02-Inside,NIC2,True
 l3leaf,dc2-leaf2,Ethernet49/1,spine,dc2-spine1,Ethernet2/1,True
 l3leaf,dc2-leaf2,Ethernet50/1,spine,dc2-spine2,Ethernet2/1,True
+l3leaf,dc2-leaf2,Ethernet51/1,l3leaf,dc1-leaf1,Ethernet52/1,True
+l3leaf,dc2-leaf2,Ethernet52/1,l3leaf,dc1-leaf2,Ethernet52/1,True
 l3leaf,dc2-leaf2,Ethernet55/1,mlag_peer,dc2-leaf1,Ethernet55/1,True
 l3leaf,dc2-leaf2,Ethernet56/1,mlag_peer,dc2-leaf1,Ethernet56/1,True
 l3leaf,dc2-leaf3,Ethernet49/1,spine,dc2-spine1,Ethernet3/1,True

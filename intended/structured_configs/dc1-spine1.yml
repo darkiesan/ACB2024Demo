@@ -2,7 +2,7 @@ hostname: dc1-spine1
 is_deployed: true
 router_bgp:
   as: '65000'
-  router_id: 10.1.0.0
+  router_id: 10.0.1.0
   bgp_defaults:
   - distance bgp 150 200 200
   - graceful-restart restart-time 300
@@ -29,22 +29,22 @@ router_bgp:
   - source_protocol: connected
     route_map: RM-CONN-2-BGP
   neighbors:
-  - ip_address: 10.1.255.253
+  - ip_address: 10.0.1.253
     peer_group: IPv4-UNDERLAY-PEERS
     remote_as: '65001'
     peer: dc1-leaf1
     description: dc1-leaf1_Ethernet49/1
-  - ip_address: 10.2.0.1
+  - ip_address: 10.0.2.1
     peer_group: IPv4-UNDERLAY-PEERS
     remote_as: '65001'
     peer: dc1-leaf2
     description: dc1-leaf2_Ethernet49/1
-  - ip_address: 10.2.0.5
+  - ip_address: 10.0.2.5
     peer_group: IPv4-UNDERLAY-PEERS
     remote_as: '65002'
     peer: dc1-leaf3
     description: dc1-leaf3_Ethernet49/1
-  - ip_address: 10.2.0.9
+  - ip_address: 10.0.2.9
     peer_group: IPv4-UNDERLAY-PEERS
     remote_as: '65002'
     peer: dc1-leaf4
@@ -97,7 +97,7 @@ ethernet_interfaces:
   shutdown: false
   mtu: 9100
   type: routed
-  ip_address: 10.1.255.252/31
+  ip_address: 10.0.1.252/31
 - name: Ethernet2/1
   peer: dc1-leaf2
   peer_interface: Ethernet49/1
@@ -106,7 +106,7 @@ ethernet_interfaces:
   shutdown: false
   mtu: 9100
   type: routed
-  ip_address: 10.2.0.0/31
+  ip_address: 10.0.2.0/31
 - name: Ethernet3/1
   peer: dc1-leaf3
   peer_interface: Ethernet49/1
@@ -115,7 +115,7 @@ ethernet_interfaces:
   shutdown: false
   mtu: 9100
   type: routed
-  ip_address: 10.2.0.4/31
+  ip_address: 10.0.2.4/31
 - name: Ethernet4/1
   peer: dc1-leaf4
   peer_interface: Ethernet49/1
@@ -124,17 +124,17 @@ ethernet_interfaces:
   shutdown: false
   mtu: 9100
   type: routed
-  ip_address: 10.2.0.8/31
+  ip_address: 10.0.2.8/31
 loopback_interfaces:
 - name: Loopback0
   description: EVPN_Overlay_Peering
   shutdown: false
-  ip_address: 10.1.0.0/32
+  ip_address: 10.0.1.0/32
 prefix_lists:
 - name: PL-LOOPBACKS-EVPN-OVERLAY
   sequence_numbers:
   - sequence: 10
-    action: permit 10.1.0.0/24 eq 32
+    action: permit 10.0.1.0/24 eq 32
 route_maps:
 - name: RM-CONN-2-BGP
   sequence_numbers:

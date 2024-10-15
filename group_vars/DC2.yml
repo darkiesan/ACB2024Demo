@@ -2,7 +2,7 @@ dc_name: DC2
 
 spine:
   defaults:
-    loopback_ipv4_pool: 10.6.0.0/24
+    loopback_ipv4_pool: 10.0.6.0/24
     bgp_defaults:
       - 'distance bgp 150 200 200'
       - 'graceful-restart restart-time 300'
@@ -22,18 +22,18 @@ spine:
 l3leaf:
   defaults:
     virtual_router_mac_address: 00:11:22:33:44:55
-    loopback_ipv4_pool: 10.6.0.0/24
-    vtep_loopback_ipv4_pool: 10.7.0.0/24
+    loopback_ipv4_pool: 10.0.6.0/24
+    vtep_loopback_ipv4_pool: 10.0.8.0/24
     loopback_ipv4_offset: 2
-    uplink_ipv4_pool: 10.7.0.0/24
+    uplink_ipv4_pool: 10.0.7.0/24
     bgp_defaults:
       - 'distance bgp 150 200 200'
       - 'graceful-restart restart-time 300'
       - 'graceful-restart'
     spanning_tree_priority: 4096
     spanning_tree_mode: mstp
-    mlag_peer_l3_ipv4_pool: 10.9.0.0/24
-    mlag_peer_ipv4_pool: 10.10.0.0/24
+    mlag_peer_l3_ipv4_pool: 10.0.9.0/24
+    mlag_peer_ipv4_pool: 10.0.10.0/24
     uplink_interfaces: [ Ethernet49/1, Ethernet50/1 ]
     uplink_switches: [ dc2-spine1, dc2-spine2 ]
     mlag_interfaces: [ Ethernet55/1, Ethernet56/1 ]

@@ -394,10 +394,10 @@ interface defaults
 
 | Interface | Description | Type | Channel Group | IP Address | VRF |  MTU | Shutdown | ACL In | ACL Out |
 | --------- | ----------- | -----| ------------- | ---------- | ----| ---- | -------- | ------ | ------- |
-| Ethernet1/1 | P2P_LINK_TO_DC1-LEAF1_Ethernet50/1 | routed | - | 10.1.255.254/31 | default | 9100 | False | - | - |
-| Ethernet2/1 | P2P_LINK_TO_DC1-LEAF2_Ethernet50/1 | routed | - | 10.2.0.2/31 | default | 9100 | False | - | - |
-| Ethernet3/1 | P2P_LINK_TO_DC1-LEAF3_Ethernet50/1 | routed | - | 10.2.0.6/31 | default | 9100 | False | - | - |
-| Ethernet4/1 | P2P_LINK_TO_DC1-LEAF4_Ethernet50/1 | routed | - | 10.2.0.10/31 | default | 9100 | False | - | - |
+| Ethernet1/1 | P2P_LINK_TO_DC1-LEAF1_Ethernet50/1 | routed | - | 10.0.1.254/31 | default | 9100 | False | - | - |
+| Ethernet2/1 | P2P_LINK_TO_DC1-LEAF2_Ethernet50/1 | routed | - | 10.0.2.2/31 | default | 9100 | False | - | - |
+| Ethernet3/1 | P2P_LINK_TO_DC1-LEAF3_Ethernet50/1 | routed | - | 10.0.2.6/31 | default | 9100 | False | - | - |
+| Ethernet4/1 | P2P_LINK_TO_DC1-LEAF4_Ethernet50/1 | routed | - | 10.0.2.10/31 | default | 9100 | False | - | - |
 
 #### Ethernet Interfaces Device Configuration
 
@@ -408,28 +408,28 @@ interface Ethernet1/1
    no shutdown
    mtu 9100
    no switchport
-   ip address 10.1.255.254/31
+   ip address 10.0.1.254/31
 !
 interface Ethernet2/1
    description P2P_LINK_TO_DC1-LEAF2_Ethernet50/1
    no shutdown
    mtu 9100
    no switchport
-   ip address 10.2.0.2/31
+   ip address 10.0.2.2/31
 !
 interface Ethernet3/1
    description P2P_LINK_TO_DC1-LEAF3_Ethernet50/1
    no shutdown
    mtu 9100
    no switchport
-   ip address 10.2.0.6/31
+   ip address 10.0.2.6/31
 !
 interface Ethernet4/1
    description P2P_LINK_TO_DC1-LEAF4_Ethernet50/1
    no shutdown
    mtu 9100
    no switchport
-   ip address 10.2.0.10/31
+   ip address 10.0.2.10/31
 ```
 
 ### Loopback Interfaces
@@ -440,7 +440,7 @@ interface Ethernet4/1
 
 | Interface | Description | VRF | IP Address |
 | --------- | ----------- | --- | ---------- |
-| Loopback0 | EVPN_Overlay_Peering | default | 10.1.0.1/32 |
+| Loopback0 | EVPN_Overlay_Peering | default | 10.0.1.1/32 |
 
 ##### IPv6
 
@@ -455,7 +455,7 @@ interface Ethernet4/1
 interface Loopback0
    description EVPN_Overlay_Peering
    no shutdown
-   ip address 10.1.0.1/32
+   ip address 10.0.1.1/32
 ```
 
 ## Routing
@@ -514,7 +514,7 @@ ASN Notation: asplain
 
 | BGP AS | Router ID |
 | ------ | --------- |
-| 65000 | 10.1.0.1 |
+| 65000 | 10.0.1.1 |
 
 | BGP Tuning |
 | ---------- |
@@ -539,17 +539,17 @@ ASN Notation: asplain
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
 | -------- | --------- | --- | -------- | -------------- | -------------- | ---------- | --- | --------------------- | ---------------------- | ------- | ------------ |
-| 10.1.255.255 | 65001 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 10.2.0.3 | 65001 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 10.2.0.7 | 65002 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 10.2.0.11 | 65002 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.0.1.255 | 65001 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.0.2.3 | 65001 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.0.2.7 | 65002 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.0.2.11 | 65002 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 
 #### Router BGP Device Configuration
 
 ```eos
 !
 router bgp 65000
-   router-id 10.1.0.1
+   router-id 10.0.1.1
    maximum-paths 2 ecmp 2
    update wait-install
    no bgp default ipv4-unicast
@@ -560,18 +560,18 @@ router bgp 65000
    neighbor IPv4-UNDERLAY-PEERS password 7 <removed>
    neighbor IPv4-UNDERLAY-PEERS send-community
    neighbor IPv4-UNDERLAY-PEERS maximum-routes 12000
-   neighbor 10.1.255.255 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.1.255.255 remote-as 65001
-   neighbor 10.1.255.255 description dc1-leaf1_Ethernet50/1
-   neighbor 10.2.0.3 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.2.0.3 remote-as 65001
-   neighbor 10.2.0.3 description dc1-leaf2_Ethernet50/1
-   neighbor 10.2.0.7 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.2.0.7 remote-as 65002
-   neighbor 10.2.0.7 description dc1-leaf3_Ethernet50/1
-   neighbor 10.2.0.11 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.2.0.11 remote-as 65002
-   neighbor 10.2.0.11 description dc1-leaf4_Ethernet50/1
+   neighbor 10.0.1.255 peer group IPv4-UNDERLAY-PEERS
+   neighbor 10.0.1.255 remote-as 65001
+   neighbor 10.0.1.255 description dc1-leaf1_Ethernet50/1
+   neighbor 10.0.2.3 peer group IPv4-UNDERLAY-PEERS
+   neighbor 10.0.2.3 remote-as 65001
+   neighbor 10.0.2.3 description dc1-leaf2_Ethernet50/1
+   neighbor 10.0.2.7 peer group IPv4-UNDERLAY-PEERS
+   neighbor 10.0.2.7 remote-as 65002
+   neighbor 10.0.2.7 description dc1-leaf3_Ethernet50/1
+   neighbor 10.0.2.11 peer group IPv4-UNDERLAY-PEERS
+   neighbor 10.0.2.11 remote-as 65002
+   neighbor 10.0.2.11 description dc1-leaf4_Ethernet50/1
    redistribute connected route-map RM-CONN-2-BGP
    !
    address-family ipv4
@@ -588,14 +588,14 @@ router bgp 65000
 
 | Sequence | Action |
 | -------- | ------ |
-| 10 | permit 10.1.0.0/24 eq 32 |
+| 10 | permit 10.0.1.0/24 eq 32 |
 
 #### Prefix-lists Device Configuration
 
 ```eos
 !
 ip prefix-list PL-LOOPBACKS-EVPN-OVERLAY
-   seq 10 permit 10.1.0.0/24 eq 32
+   seq 10 permit 10.0.1.0/24 eq 32
 ```
 
 ### Route-maps

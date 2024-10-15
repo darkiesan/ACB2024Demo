@@ -342,7 +342,7 @@ sflow run
 
 | Domain-id | Local-interface | Peer-address | Peer-link |
 | --------- | --------------- | ------------ | --------- |
-| dc2-leafpair1 | Vlan4094 | 10.9.255.255 | Port-Channel551 |
+| dc2-leafpair1 | Vlan4094 | 10.0.9.255 | Port-Channel551 |
 
 Dual primary detection is disabled.
 
@@ -353,7 +353,7 @@ Dual primary detection is disabled.
 mlag configuration
    domain-id dc2-leafpair1
    local-interface Vlan4094
-   peer-address 10.9.255.255
+   peer-address 10.0.9.255
    peer-link Port-Channel551
    reload-delay mlag 300
    reload-delay non-mlag 330
@@ -524,8 +524,10 @@ interface defaults
 
 | Interface | Description | Type | Channel Group | IP Address | VRF |  MTU | Shutdown | ACL In | ACL Out |
 | --------- | ----------- | -----| ------------- | ---------- | ----| ---- | -------- | ------ | ------- |
-| Ethernet49/1 | P2P_LINK_TO_DC2-SPINE1_Ethernet1/1 | routed | - | 10.6.255.253/31 | default | 9100 | False | - | - |
-| Ethernet50/1 | P2P_LINK_TO_DC2-SPINE2_Ethernet1/1 | routed | - | 10.6.255.255/31 | default | 9100 | False | - | - |
+| Ethernet49/1 | P2P_LINK_TO_DC2-SPINE1_Ethernet1/1 | routed | - | 10.0.6.253/31 | default | 9100 | False | - | - |
+| Ethernet50/1 | P2P_LINK_TO_DC2-SPINE2_Ethernet1/1 | routed | - | 10.0.6.255/31 | default | 9100 | False | - | - |
+| Ethernet51/1 | P2P_LINK_TO_dc1-leaf1_Ethernet51/1 | routed | - | 10.0.11.1/31 | default | 9100 | False | - | - |
+| Ethernet52/1 | P2P_LINK_TO_dc1-leaf2_Ethernet51/1 | routed | - | 10.0.11.5/31 | default | 9100 | False | - | - |
 
 #### Ethernet Interfaces Device Configuration
 
@@ -570,14 +572,28 @@ interface Ethernet49/1
    no shutdown
    mtu 9100
    no switchport
-   ip address 10.6.255.253/31
+   ip address 10.0.6.253/31
 !
 interface Ethernet50/1
    description P2P_LINK_TO_DC2-SPINE2_Ethernet1/1
    no shutdown
    mtu 9100
    no switchport
-   ip address 10.6.255.255/31
+   ip address 10.0.6.255/31
+!
+interface Ethernet51/1
+   description P2P_LINK_TO_dc1-leaf1_Ethernet51/1
+   no shutdown
+   mtu 9100
+   no switchport
+   ip address 10.0.11.1/31
+!
+interface Ethernet52/1
+   description P2P_LINK_TO_dc1-leaf2_Ethernet51/1
+   no shutdown
+   mtu 9100
+   no switchport
+   ip address 10.0.11.5/31
 !
 interface Ethernet55/1
    description MLAG_PEER_dc2-leaf2_Ethernet55/1
@@ -687,8 +703,8 @@ interface Port-Channel551
 
 | Interface | Description | VRF | IP Address |
 | --------- | ----------- | --- | ---------- |
-| Loopback0 | EVPN_Overlay_Peering | default | 10.6.0.2/32 |
-| Loopback1 | VTEP_VXLAN_Tunnel_Source | default | 10.7.0.2/32 |
+| Loopback0 | EVPN_Overlay_Peering | default | 10.0.6.2/32 |
+| Loopback1 | VTEP_VXLAN_Tunnel_Source | default | 10.0.8.2/32 |
 
 ##### IPv6
 
@@ -704,12 +720,12 @@ interface Port-Channel551
 interface Loopback0
    description EVPN_Overlay_Peering
    no shutdown
-   ip address 10.6.0.2/32
+   ip address 10.0.6.2/32
 !
 interface Loopback1
    description VTEP_VXLAN_Tunnel_Source
    no shutdown
-   ip address 10.7.0.2/32
+   ip address 10.0.8.2/32
 ```
 
 ### VLAN Interfaces
@@ -742,11 +758,11 @@ interface Loopback1
 | Vlan300 |  Proxmox  |  -  |  10.30.0.1/24  |  -  |  -  |  -  |  -  |
 | Vlan301 |  Proxmox  |  -  |  10.31.0.1/24  |  -  |  -  |  -  |  -  |
 | Vlan302 |  Proxmox  |  -  |  10.32.0.1/24  |  -  |  -  |  -  |  -  |
-| Vlan3000 |  InbandMgmt  |  10.8.255.254/31  |  -  |  -  |  -  |  -  |  -  |
-| Vlan3001 |  Kubernetes  |  10.8.255.254/31  |  -  |  -  |  -  |  -  |  -  |
-| Vlan3002 |  Proxmox  |  10.8.255.254/31  |  -  |  -  |  -  |  -  |  -  |
-| Vlan4093 |  default  |  10.8.255.254/31  |  -  |  -  |  -  |  -  |  -  |
-| Vlan4094 |  default  |  10.9.255.254/31  |  -  |  -  |  -  |  -  |  -  |
+| Vlan3000 |  InbandMgmt  |  10.0.8.254/31  |  -  |  -  |  -  |  -  |  -  |
+| Vlan3001 |  Kubernetes  |  10.0.8.254/31  |  -  |  -  |  -  |  -  |  -  |
+| Vlan3002 |  Proxmox  |  10.0.8.254/31  |  -  |  -  |  -  |  -  |  -  |
+| Vlan4093 |  default  |  10.0.8.254/31  |  -  |  -  |  -  |  -  |  -  |
+| Vlan4094 |  default  |  10.0.9.254/31  |  -  |  -  |  -  |  -  |  -  |
 
 #### VLAN Interfaces Device Configuration
 
@@ -810,34 +826,34 @@ interface Vlan3000
    no shutdown
    mtu 9100
    vrf InbandMgmt
-   ip address 10.8.255.254/31
+   ip address 10.0.8.254/31
 !
 interface Vlan3001
    description MLAG_PEER_L3_iBGP: vrf Kubernetes
    no shutdown
    mtu 9100
    vrf Kubernetes
-   ip address 10.8.255.254/31
+   ip address 10.0.8.254/31
 !
 interface Vlan3002
    description MLAG_PEER_L3_iBGP: vrf Proxmox
    no shutdown
    mtu 9100
    vrf Proxmox
-   ip address 10.8.255.254/31
+   ip address 10.0.8.254/31
 !
 interface Vlan4093
    description MLAG_PEER_L3_PEERING
    no shutdown
    mtu 9100
-   ip address 10.8.255.254/31
+   ip address 10.0.8.254/31
 !
 interface Vlan4094
    description MLAG_PEER
    no shutdown
    mtu 9100
    no autostate
-   ip address 10.9.255.254/31
+   ip address 10.0.9.254/31
 ```
 
 ### VXLAN Interface
@@ -992,7 +1008,7 @@ ASN Notation: asplain
 
 | BGP AS | Router ID |
 | ------ | --------- |
-| 65101 | 10.6.0.2 |
+| 65101 | 10.0.6.2 |
 
 | BGP Tuning |
 | ---------- |
@@ -1039,16 +1055,18 @@ ASN Notation: asplain
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
 | -------- | --------- | --- | -------- | -------------- | -------------- | ---------- | --- | --------------------- | ---------------------- | ------- | ------------ |
-| 10.1.0.2 | 65001 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
-| 10.1.0.3 | 65001 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
-| 10.6.0.4 | 65102 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
-| 10.6.0.5 | 65102 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
-| 10.6.255.252 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 10.6.255.254 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 10.8.255.255 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | default | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
-| 10.8.255.255 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | InbandMgmt | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
-| 10.8.255.255 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Kubernetes | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
-| 10.8.255.255 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Proxmox | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
+| 10.0.1.2 | 65001 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
+| 10.0.1.3 | 65001 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
+| 10.0.6.4 | 65102 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
+| 10.0.6.5 | 65102 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
+| 10.0.6.252 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.0.6.254 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.0.8.255 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | default | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
+| 10.0.11.0 | 65001 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.0.11.4 | 65001 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
+| 10.0.8.255 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | InbandMgmt | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
+| 10.0.8.255 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Kubernetes | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
+| 10.0.8.255 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Proxmox | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 
 #### Router BGP EVPN Address Family
 
@@ -1062,30 +1080,30 @@ ASN Notation: asplain
 
 | VLAN | Route-Distinguisher | Both Route-Target | Import Route Target | Export Route-Target | Redistribute |
 | ---- | ------------------- | ----------------- | ------------------- | ------------------- | ------------ |
-| 10 | 10.6.0.2:10010 | 65000:10010 | - | - | learned |
-| 20 | 10.6.0.2:10020 | 65000:10020 | - | - | learned |
-| 100 | 10.6.0.2:10100 | 65000:10100 | - | - | learned |
-| 200 | 10.6.0.2:10200 | 65000:10200 | - | - | learned |
-| 201 | 10.6.0.2:10201 | 65000:10201 | - | - | learned |
-| 202 | 10.6.0.2:10202 | 65000:10202 | - | - | learned |
-| 300 | 10.6.0.2:10300 | 65000:10300 | - | - | learned |
-| 301 | 10.6.0.2:10301 | 65000:10301 | - | - | learned |
-| 302 | 10.6.0.2:10302 | 65000:10302 | - | - | learned |
+| 10 | 10.0.6.2:10010 | 65000:10010 | - | - | learned |
+| 20 | 10.0.6.2:10020 | 65000:10020 | - | - | learned |
+| 100 | 10.0.6.2:10100 | 65000:10100 | - | - | learned |
+| 200 | 10.0.6.2:10200 | 65000:10200 | - | - | learned |
+| 201 | 10.0.6.2:10201 | 65000:10201 | - | - | learned |
+| 202 | 10.0.6.2:10202 | 65000:10202 | - | - | learned |
+| 300 | 10.0.6.2:10300 | 65000:10300 | - | - | learned |
+| 301 | 10.0.6.2:10301 | 65000:10301 | - | - | learned |
+| 302 | 10.0.6.2:10302 | 65000:10302 | - | - | learned |
 
 #### Router BGP VRFs
 
 | VRF | Route-Distinguisher | Redistribute |
 | --- | ------------------- | ------------ |
-| InbandMgmt | 10.6.0.2:1 | connected<br>static |
-| Kubernetes | 10.6.0.2:2 | connected<br>static |
-| Proxmox | 10.6.0.2:3 | connected<br>static |
+| InbandMgmt | 10.0.6.2:1 | connected<br>static |
+| Kubernetes | 10.0.6.2:2 | connected<br>static |
+| Proxmox | 10.0.6.2:3 | connected<br>static |
 
 #### Router BGP Device Configuration
 
 ```eos
 !
 router bgp 65101
-   router-id 10.6.0.2
+   router-id 10.0.6.2
    maximum-paths 2 ecmp 2
    update wait-install
    no bgp default ipv4-unicast
@@ -1112,72 +1130,78 @@ router bgp 65101
    neighbor MLAG-IPv4-UNDERLAY-PEER send-community
    neighbor MLAG-IPv4-UNDERLAY-PEER maximum-routes 12000
    neighbor MLAG-IPv4-UNDERLAY-PEER route-map RM-MLAG-PEER-IN in
-   neighbor 10.1.0.2 peer group EVPN-OVERLAY-PEERS
-   neighbor 10.1.0.2 remote-as 65001
-   neighbor 10.1.0.2 description dc1-leaf1
-   neighbor 10.1.0.2 route-map RM-EVPN-FILTER-AS65001 out
-   neighbor 10.1.0.3 peer group EVPN-OVERLAY-PEERS
-   neighbor 10.1.0.3 remote-as 65001
-   neighbor 10.1.0.3 description dc1-leaf2
-   neighbor 10.1.0.3 route-map RM-EVPN-FILTER-AS65001 out
-   neighbor 10.6.0.4 peer group EVPN-OVERLAY-PEERS
-   neighbor 10.6.0.4 remote-as 65102
-   neighbor 10.6.0.4 description dc2-leaf3
-   neighbor 10.6.0.5 peer group EVPN-OVERLAY-PEERS
-   neighbor 10.6.0.5 remote-as 65102
-   neighbor 10.6.0.5 description dc2-leaf4
-   neighbor 10.6.255.252 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.6.255.252 remote-as 65100
-   neighbor 10.6.255.252 description dc2-spine1_Ethernet1/1
-   neighbor 10.6.255.254 peer group IPv4-UNDERLAY-PEERS
-   neighbor 10.6.255.254 remote-as 65100
-   neighbor 10.6.255.254 description dc2-spine2_Ethernet1/1
-   neighbor 10.8.255.255 peer group MLAG-IPv4-UNDERLAY-PEER
-   neighbor 10.8.255.255 description dc2-leaf2
+   neighbor 10.0.1.2 peer group EVPN-OVERLAY-PEERS
+   neighbor 10.0.1.2 remote-as 65001
+   neighbor 10.0.1.2 description dc1-leaf1
+   neighbor 10.0.1.2 route-map RM-EVPN-FILTER-AS65001 out
+   neighbor 10.0.1.3 peer group EVPN-OVERLAY-PEERS
+   neighbor 10.0.1.3 remote-as 65001
+   neighbor 10.0.1.3 description dc1-leaf2
+   neighbor 10.0.1.3 route-map RM-EVPN-FILTER-AS65001 out
+   neighbor 10.0.6.4 peer group EVPN-OVERLAY-PEERS
+   neighbor 10.0.6.4 remote-as 65102
+   neighbor 10.0.6.4 description dc2-leaf3
+   neighbor 10.0.6.5 peer group EVPN-OVERLAY-PEERS
+   neighbor 10.0.6.5 remote-as 65102
+   neighbor 10.0.6.5 description dc2-leaf4
+   neighbor 10.0.6.252 peer group IPv4-UNDERLAY-PEERS
+   neighbor 10.0.6.252 remote-as 65100
+   neighbor 10.0.6.252 description dc2-spine1_Ethernet1/1
+   neighbor 10.0.6.254 peer group IPv4-UNDERLAY-PEERS
+   neighbor 10.0.6.254 remote-as 65100
+   neighbor 10.0.6.254 description dc2-spine2_Ethernet1/1
+   neighbor 10.0.8.255 peer group MLAG-IPv4-UNDERLAY-PEER
+   neighbor 10.0.8.255 description dc2-leaf2
+   neighbor 10.0.11.0 peer group IPv4-UNDERLAY-PEERS
+   neighbor 10.0.11.0 remote-as 65001
+   neighbor 10.0.11.0 description dc1-leaf1
+   neighbor 10.0.11.4 peer group IPv4-UNDERLAY-PEERS
+   neighbor 10.0.11.4 remote-as 65001
+   neighbor 10.0.11.4 description dc1-leaf2
    redistribute connected route-map RM-CONN-2-BGP
    !
    vlan 10
-      rd 10.6.0.2:10010
+      rd 10.0.6.2:10010
       route-target both 65000:10010
       redistribute learned
    !
    vlan 100
-      rd 10.6.0.2:10100
+      rd 10.0.6.2:10100
       route-target both 65000:10100
       redistribute learned
    !
    vlan 20
-      rd 10.6.0.2:10020
+      rd 10.0.6.2:10020
       route-target both 65000:10020
       redistribute learned
    !
    vlan 200
-      rd 10.6.0.2:10200
+      rd 10.0.6.2:10200
       route-target both 65000:10200
       redistribute learned
    !
    vlan 201
-      rd 10.6.0.2:10201
+      rd 10.0.6.2:10201
       route-target both 65000:10201
       redistribute learned
    !
    vlan 202
-      rd 10.6.0.2:10202
+      rd 10.0.6.2:10202
       route-target both 65000:10202
       redistribute learned
    !
    vlan 300
-      rd 10.6.0.2:10300
+      rd 10.0.6.2:10300
       route-target both 65000:10300
       redistribute learned
    !
    vlan 301
-      rd 10.6.0.2:10301
+      rd 10.0.6.2:10301
       route-target both 65000:10301
       redistribute learned
    !
    vlan 302
-      rd 10.6.0.2:10302
+      rd 10.0.6.2:10302
       route-target both 65000:10302
       redistribute learned
    !
@@ -1190,32 +1214,32 @@ router bgp 65101
       neighbor MLAG-IPv4-UNDERLAY-PEER activate
    !
    vrf InbandMgmt
-      rd 10.6.0.2:1
+      rd 10.0.6.2:1
       route-target import evpn 65000:1
       route-target export evpn 65000:1
-      router-id 10.6.0.2
+      router-id 10.0.6.2
       update wait-install
-      neighbor 10.8.255.255 peer group MLAG-IPv4-UNDERLAY-PEER
+      neighbor 10.0.8.255 peer group MLAG-IPv4-UNDERLAY-PEER
       redistribute connected
       redistribute static
    !
    vrf Kubernetes
-      rd 10.6.0.2:2
+      rd 10.0.6.2:2
       route-target import evpn 65000:2
       route-target export evpn 65000:2
-      router-id 10.6.0.2
+      router-id 10.0.6.2
       update wait-install
-      neighbor 10.8.255.255 peer group MLAG-IPv4-UNDERLAY-PEER
+      neighbor 10.0.8.255 peer group MLAG-IPv4-UNDERLAY-PEER
       redistribute connected
       redistribute static
    !
    vrf Proxmox
-      rd 10.6.0.2:3
+      rd 10.0.6.2:3
       route-target import evpn 65000:3
       route-target export evpn 65000:3
-      router-id 10.6.0.2
+      router-id 10.0.6.2
       update wait-install
-      neighbor 10.8.255.255 peer group MLAG-IPv4-UNDERLAY-PEER
+      neighbor 10.0.8.255 peer group MLAG-IPv4-UNDERLAY-PEER
       redistribute connected
       redistribute static
 ```
@@ -1263,16 +1287,16 @@ router bfd
 
 | Sequence | Action |
 | -------- | ------ |
-| 10 | permit 10.6.0.0/24 eq 32 |
-| 20 | permit 10.7.0.0/24 eq 32 |
+| 10 | permit 10.0.6.0/24 eq 32 |
+| 20 | permit 10.0.8.0/24 eq 32 |
 
 #### Prefix-lists Device Configuration
 
 ```eos
 !
 ip prefix-list PL-LOOPBACKS-EVPN-OVERLAY
-   seq 10 permit 10.6.0.0/24 eq 32
-   seq 20 permit 10.7.0.0/24 eq 32
+   seq 10 permit 10.0.6.0/24 eq 32
+   seq 20 permit 10.0.8.0/24 eq 32
 ```
 
 ### Route-maps
