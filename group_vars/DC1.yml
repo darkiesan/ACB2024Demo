@@ -7,8 +7,8 @@ spine:
       - 'distance bgp 150 200 200'
       - 'graceful-restart restart-time 300'
       - 'graceful-restart'
-      evpn_role: server
-      evpn_route_servers: [ dc2-spine1, dc2-spine2 ]
+    evpn_role: server
+    evpn_route_servers: [ dc2-spine1, dc2-spine2 ]
   node_groups:
     - group: dc1-spinepair
       bgp_as: 65000

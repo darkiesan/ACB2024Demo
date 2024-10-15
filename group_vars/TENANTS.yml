@@ -1,39 +1,35 @@
 tenants:
   TENANT_A:
+    mac_vrf_vni_base: 10000
     vrfs:
       VRF_A:
-        vrf_vni: 10000
+        vrf_vni: 1
         vtep_diagnostic:
           loopback: 100
           loopback_ip_range: 10.1.255.0/24
         svis:
           100:
             name: VLAN_100
-            tags: ['tenant_a']
             enabled: true
             ip_address_virtual: 10.1.100.1/24
           101:
             name: VLAN_101
-            tags: ['tenant_a']
             enabled: true
             ip_address_virtual: 10.1.101.1/24
       VRF_B:
-        vrf_vni: 20000
+        vrf_vni: 2
         vtep_diagnostic:
           loopback: 200
           loopback_ip_range: 10.2.255.0/24
         svis:
           200:
             name: VLAN_200
-            tags: ['tenant_a']
             enabled: true
             ip_address_virtual: 10.2.200.1/24
           201:
             name: VLAN_201
-            tags: ['tenant_a']
             enabled: true
             ip_address_virtual: 10.2.201.1/24
     l2vlans:
       10:
         name: VLAN_10
-        tags: ['tenant_a']

@@ -7,8 +7,8 @@ spine:
       - 'distance bgp 150 200 200'
       - 'graceful-restart restart-time 300'
       - 'graceful-restart'
-      evpn_role: server
-      evpn_route_servers: [ dc1-spine1, dc1-spine2 ]
+    evpn_role: server
+    evpn_route_servers: [ dc1-spine1, dc1-spine2 ]
   node_groups:
     - group: dc2-spinepair
       bgp_as: 65100
@@ -59,7 +59,7 @@ l3leaf:
           id: 2
           mgmt_ip: 10.0.0.11/24
           uplink_switch_interfaces: [ Ethernet3/1, Ethernet3/1 ]
-        - name: dc1-leaf4
+        - name: dc2-leaf4
           id: 3
           mgmt_ip: 10.0.0.12/24
           uplink_switch_interfaces: [ Ethernet4/1, Ethernet4/1 ]
