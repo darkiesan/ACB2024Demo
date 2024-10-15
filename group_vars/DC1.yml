@@ -7,8 +7,7 @@ spine:
       - 'distance bgp 150 200 200'
       - 'graceful-restart restart-time 300'
       - 'graceful-restart'
-      evpn_role: server
-      evpn_route_servers: [ dc2-spine1, dc2-spine2 ]
+    evpn_role: none
   node_groups:
     - group: dc1-spinepair
       bgp_as: 65000
@@ -37,12 +36,14 @@ l3leaf:
     mlag_peer_ipv4_pool: 10.5.0.0/24
     uplink_interfaces: [ Ethernet49/1, Ethernet50/1 ]
     uplink_switches: [ dc1-spine1, dc1-spine2 ]
-    mlag_interfaces: [ Ethernet53/1, Ethernet54/1 ]
+    mlag_interfaces: [ Ethernet55/1, Ethernet56/1 ]
     evpn_role: client
-    evpn_route_servers: [ dc1-spine1, dc1-spine2 ]
+    evpn_route_servers: [ dc1-leaf1, dc1-leaf2 ]
   node_groups:
     - group: dc1-leafpair1
       bgp_as: 65001
+      evpn_role: server
+      evpn_route_servers: [ dc2-leaf1, dc2-leaf2 ]
       nodes:
         - name: dc1-leaf1
           id: 0

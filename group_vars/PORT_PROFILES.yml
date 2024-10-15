@@ -1,0 +1,50 @@
+port_profiles:
+  - profile: BaseEndpoint
+    spanning_tree_portfast: "edge"
+    spanning_tree_bpdufilter: "enabled"
+    spanning_tree_bpduguard: "enabled"
+    storm_control:
+      all:
+        level: "10"
+        unit: "percent"
+      broadcast:
+        level: "10"
+        unit: "percent"
+      multicast:
+        level: "20"
+        unit: "percent"
+      unknown_unicast:
+        level: "10"
+        unit: "percent"
+
+  - profile: FirewallOutside
+    parent_profile: BaseEndpoint
+    mode: "trunk"
+    vlans: "10,20"
+
+  - profile: FirewallInside
+    parent_profile: BaseEndpoint
+    mode: "trunk"
+    vlans: "100,200,201,202,300,301,302"
+
+  - profile: ISP1
+    parent_profile: BaseEndpoint
+    mode: "access"
+    vlans: "10"
+
+  - profile: ISP2
+    parent_profile: BaseEndpoint
+    mode: "access"
+    vlans: "20"
+
+  - profile: Proxmox
+    parent_profile: BaseEndpoint
+    mode: "trunk"
+    native_vlan: "100"
+    vlans: "100,200,201,202"
+
+  - profile: Kubernetes
+    parent_profile: BaseEndpoint
+    mode: "trunk"
+    native_vlan: "100"
+    vlans: "100,300,301,302"

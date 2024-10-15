@@ -1,0 +1,191 @@
+#
+# Unused interfaces are per default shutdown
+#
+
+interface_defaults:
+  ethernet:
+    shutdown: true
+
+#
+# Telemetry settings
+#
+
+daemon_terminattr:
+  cvaddrs:
+    - "10.0.0.253:9910"
+    - "10.0.0.252:9910"
+    - "10.0.0.251:9910"
+  cvauth:
+    method: "token"
+    token_file: "/tmp/token"
+  cvvrf: mgmt
+  smashexcludes: "ale,flexCounter,hardware,kni,pulse,strata"
+  taillogs: ""
+
+#
+# Errdisable
+#
+
+errdisable:
+  detect:
+    causes:
+      - "acl"
+#       - "arp-inspection"
+#       - "dot1x"
+      - "link-change"
+      - "tapagg"
+      - "xcvr-misconfigured"
+      - "xcvr-overheat"
+      - "xcvr-power-unsupported"
+  recovery:
+    causes:
+#       - "arp-inspection"
+      - "bpduguard"
+#       - "dot1x"
+      - "hitless-reload-down"
+      - "lacp-rate-limit"
+      - "link-flap"
+      - "no-internal-vlan"
+      - "portchannelguard"
+      - "portsec"
+      - "speed-misconfigured"
+      - "tap-port-init"
+      - "tapagg"
+      - "uplink-failure-detection"
+      - "xcvr-misconfigured"
+      - "xcvr-overheat"
+      - "xcvr-power-unsupported"
+      - "xcvr-unsupported"
+    interval: 30
+
+#
+# Logging
+#
+
+logging:
+  format:
+    hostname: "fqdn"
+  vrfs:
+    - name: mgmt
+      hosts:
+        - name: "10.0.0.247"
+
+#
+# Nameservers and DNS domain
+#
+
+dns_domain: poc.local
+
+name_server:
+  source:
+    vrf: mgmt
+  nodes:
+    - 10.0.0.247
+
+#
+# NTP and time settings
+#
+
+clock:
+  timezone: "Europe/Stockholm"
+
+ntp:
+  servers:
+  - name: "ntp.poc.local"
+    local_interface: "Management1"
+    iburst: True
+    preferred: true
+    version: 4
+    maxpoll: 9
+    minpoll: 3
+    vrf: "mgmt"
+
+#
+# sFlow settings
+#
+sflow:
+  sample: 1000
+  dangerous: false
+  destinations:
+    - destination: "127.0.0.1"
+  source_interface: Loopback0
+  run: true
+
+#
+# SNMP settings
+#  
+snmp_server:
+  communities:
+    - name: "public"
+      access: "ro"
+    - name: "write"
+      access: "rw"
+  local_interfaces:
+    - name: "Management1"
+      vrf: "mgmt"
+  vrfs:
+    - name: "mgmt"
+      enable: true
+
+#
+# Local user accounts
+#
+
+local_users:
+
+  - name: "admin"
+    privilege: 15
+    role: "network-admin"
+    sha512_password: "$6$nZtyYVaP/8VtISWq$DMvWmsVGFN1plb/KajdjwJAb70o5LqDwUJpwDTQRSzgi952hO8C8aHQaKCYutIxmjZZe.AfOJaAaYO7sUwoHr/"
+
+  - name: "cvpadmin"
+    privilege: 15
+    role: "network-admin"
+    sha512_password: "$6$nZtyYVaP/8VtISWq$DMvWmsVGFN1plb/KajdjwJAb70o5LqDwUJpwDTQRSzgi952hO8C8aHQaKCYutIxmjZZe.AfOJaAaYO7sUwoHr/"
+
+  - name: "df"
+    privilege: 15
+    role: "network-admin"
+    sha512_password: "$6$5pbiNATGY9.ikP2C$872ev7VVTsYZWaI2sTobh.Uk2lMEycVskwIRfBJVv2SdppOICwh3ZV8iHbscXJCv/8KLiUUTfnlCl.XbMZ8I8/"
+  
+#
+# Terminal settings
+#
+
+terminal:
+  length: 0
+  
+#
+# Management API settings
+#
+
+management_api_http:
+  enable_https: true
+  enable_vrfs:
+    - name: "mgmt"
+
+#
+# Management SSH settings
+#
+
+management_ssh:
+  idle_timeout: 30
+  enable: true
+  vrfs:
+    - name: mgmt
+      enable: true
+
+#
+# MGMT VRF settings
+#
+
+mgmt_vrf_routing: true
+mgmt_interface_vrf: "mgmt"
+
+#
+# MAC address table settings
+#
+
+mac_address_table:
+  aging_time: 901
+

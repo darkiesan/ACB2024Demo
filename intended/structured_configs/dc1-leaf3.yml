@@ -1,0 +1,545 @@
+hostname: dc1-leaf3
+is_deployed: true
+router_bgp:
+  as: '65002'
+  router_id: 10.1.0.4
+  bgp_defaults:
+  - distance bgp 150 200 200
+  - graceful-restart restart-time 300
+  - graceful-restart
+  bgp:
+    default:
+      ipv4_unicast: false
+  maximum_paths:
+    paths: 2
+    ecmp: 2
+  updates:
+    wait_install: true
+  peer_groups:
+  - name: MLAG-IPv4-UNDERLAY-PEER
+    type: ipv4
+    remote_as: '65002'
+    next_hop_self: true
+    description: dc1-leaf4
+    password: $1c$U4tL2vQP9QwZlxIV1K3/pw==
+    maximum_routes: 12000
+    send_community: all
+    route_map_in: RM-MLAG-PEER-IN
+  - name: IPv4-UNDERLAY-PEERS
+    type: ipv4
+    password: $1c$U4tL2vQP9QwZlxIV1K3/pw==
+    maximum_routes: 12000
+    send_community: all
+  - name: EVPN-OVERLAY-PEERS
+    type: evpn
+    update_source: Loopback0
+    bfd: true
+    password: $1c$U4tL2vQP9QwZlxIV1K3/pw==
+    send_community: all
+    maximum_routes: 0
+    ebgp_multihop: 4
+  address_family_ipv4:
+    peer_groups:
+    - name: MLAG-IPv4-UNDERLAY-PEER
+      activate: true
+    - name: IPv4-UNDERLAY-PEERS
+      activate: true
+    - name: EVPN-OVERLAY-PEERS
+      activate: false
+  neighbors:
+  - ip_address: 10.4.0.3
+    peer_group: MLAG-IPv4-UNDERLAY-PEER
+    peer: dc1-leaf4
+    description: dc1-leaf4
+  - ip_address: 10.2.0.4
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65000'
+    peer: dc1-spine1
+    description: dc1-spine1_Ethernet3/1
+  - ip_address: 10.2.0.6
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65000'
+    peer: dc1-spine2
+    description: dc1-spine2_Ethernet3/1
+  - ip_address: 10.1.0.2
+    peer_group: EVPN-OVERLAY-PEERS
+    peer: dc1-leaf1
+    description: dc1-leaf1
+    remote_as: '65001'
+    route_map_out: RM-EVPN-FILTER-AS65001
+  - ip_address: 10.1.0.3
+    peer_group: EVPN-OVERLAY-PEERS
+    peer: dc1-leaf2
+    description: dc1-leaf2
+    remote_as: '65001'
+    route_map_out: RM-EVPN-FILTER-AS65001
+  redistribute_routes:
+  - source_protocol: connected
+    route_map: RM-CONN-2-BGP
+  address_family_evpn:
+    peer_groups:
+    - name: EVPN-OVERLAY-PEERS
+      activate: true
+  vrfs:
+  - name: InbandMgmt
+    router_id: 10.1.0.4
+    rd: 10.1.0.4:1
+    route_targets:
+      import:
+      - address_family: evpn
+        route_targets:
+        - '65000:1'
+      export:
+      - address_family: evpn
+        route_targets:
+        - '65000:1'
+    redistribute_routes:
+    - source_protocol: connected
+    neighbors:
+    - ip_address: 10.4.0.3
+      peer_group: MLAG-IPv4-UNDERLAY-PEER
+    updates:
+      wait_install: true
+  - name: Kubernetes
+    router_id: 10.1.0.4
+    rd: 10.1.0.4:2
+    route_targets:
+      import:
+      - address_family: evpn
+        route_targets:
+        - '65000:2'
+      export:
+      - address_family: evpn
+        route_targets:
+        - '65000:2'
+    redistribute_routes:
+    - source_protocol: connected
+    neighbors:
+    - ip_address: 10.4.0.3
+      peer_group: MLAG-IPv4-UNDERLAY-PEER
+    updates:
+      wait_install: true
+  - name: Proxmox
+    router_id: 10.1.0.4
+    rd: 10.1.0.4:3
+    route_targets:
+      import:
+      - address_family: evpn
+        route_targets:
+        - '65000:3'
+      export:
+      - address_family: evpn
+        route_targets:
+        - '65000:3'
+    redistribute_routes:
+    - source_protocol: connected
+    neighbors:
+    - ip_address: 10.4.0.3
+      peer_group: MLAG-IPv4-UNDERLAY-PEER
+    updates:
+      wait_install: true
+  vlans:
+  - id: 100
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10100
+    route_targets:
+      both:
+      - 65000:10100
+    redistribute_routes:
+    - learned
+  - id: 200
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10200
+    route_targets:
+      both:
+      - 65000:10200
+    redistribute_routes:
+    - learned
+  - id: 201
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10201
+    route_targets:
+      both:
+      - 65000:10201
+    redistribute_routes:
+    - learned
+  - id: 202
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10202
+    route_targets:
+      both:
+      - 65000:10202
+    redistribute_routes:
+    - learned
+  - id: 300
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10300
+    route_targets:
+      both:
+      - 65000:10300
+    redistribute_routes:
+    - learned
+  - id: 301
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10301
+    route_targets:
+      both:
+      - 65000:10301
+    redistribute_routes:
+    - learned
+  - id: 302
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10302
+    route_targets:
+      both:
+      - 65000:10302
+    redistribute_routes:
+    - learned
+  - id: 10
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10010
+    route_targets:
+      both:
+      - 65000:10010
+    redistribute_routes:
+    - learned
+  - id: 20
+    tenant: AcmeCorp
+    rd: 10.1.0.4:10020
+    route_targets:
+      both:
+      - 65000:10020
+    redistribute_routes:
+    - learned
+service_routing_protocols_model: multi-agent
+ip_routing: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 3700
+    ending: 3900
+spanning_tree:
+  mode: mstp
+  mst_instances:
+  - id: '0'
+    priority: 4096
+  no_spanning_tree_vlan: 4093-4094
+local_users:
+- name: admin
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$nZtyYVaP/8VtISWq$DMvWmsVGFN1plb/KajdjwJAb70o5LqDwUJpwDTQRSzgi952hO8C8aHQaKCYutIxmjZZe.AfOJaAaYO7sUwoHr/
+- name: cvpadmin
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$nZtyYVaP/8VtISWq$DMvWmsVGFN1plb/KajdjwJAb70o5LqDwUJpwDTQRSzgi952hO8C8aHQaKCYutIxmjZZe.AfOJaAaYO7sUwoHr/
+- name: df
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$5pbiNATGY9.ikP2C$872ev7VVTsYZWaI2sTobh.Uk2lMEycVskwIRfBJVv2SdppOICwh3ZV8iHbscXJCv/8KLiUUTfnlCl.XbMZ8I8/
+vrfs:
+- name: mgmt
+  ip_routing: true
+- name: InbandMgmt
+  tenant: AcmeCorp
+  ip_routing: true
+- name: Kubernetes
+  tenant: AcmeCorp
+  ip_routing: true
+- name: Proxmox
+  tenant: AcmeCorp
+  ip_routing: true
+management_interfaces:
+- name: Management1
+  description: oob_management
+  shutdown: false
+  vrf: mgmt
+  ip_address: 10.0.0.5/24
+  gateway: null
+  type: oob
+mac_address_table:
+  aging_time: 901
+management_api_http:
+  enable_vrfs:
+  - name: mgmt
+  enable_https: true
+vlans:
+- id: 4093
+  tenant: system
+  name: LEAF_PEER_L3
+  trunk_groups:
+  - LEAF_PEER_L3
+- id: 4094
+  tenant: system
+  name: MLAG_PEER
+  trunk_groups:
+  - MLAG
+- id: 100
+  name: InbandMgmt
+  tenant: AcmeCorp
+- id: 3000
+  name: MLAG_iBGP_InbandMgmt
+  trunk_groups:
+  - LEAF_PEER_L3
+  tenant: AcmeCorp
+- id: 200
+  name: Linknet Kubernetes FW
+  tenant: AcmeCorp
+- id: 201
+  name: Kubernetes1
+  tenant: AcmeCorp
+- id: 202
+  name: Kubernetes2
+  tenant: AcmeCorp
+- id: 3001
+  name: MLAG_iBGP_Kubernetes
+  trunk_groups:
+  - LEAF_PEER_L3
+  tenant: AcmeCorp
+- id: 300
+  name: Linknet Proxmox FW
+  tenant: AcmeCorp
+- id: 301
+  name: Proxmox1
+  tenant: AcmeCorp
+- id: 302
+  name: Proxmox2
+  tenant: AcmeCorp
+- id: 3002
+  name: MLAG_iBGP_Proxmox
+  trunk_groups:
+  - LEAF_PEER_L3
+  tenant: AcmeCorp
+- id: 10
+  name: ISP1
+  tenant: AcmeCorp
+- id: 20
+  name: ISP2
+  tenant: AcmeCorp
+vlan_interfaces:
+- name: Vlan4093
+  description: MLAG_PEER_L3_PEERING
+  shutdown: false
+  mtu: 9100
+  ip_address: 10.4.0.2/31
+- name: Vlan4094
+  description: MLAG_PEER
+  shutdown: false
+  no_autostate: true
+  mtu: 9100
+  ip_address: 10.5.0.2/31
+- name: Vlan100
+  tenant: AcmeCorp
+  description: InbandMgmt
+  shutdown: false
+  ip_address: 10.10.0.5/24
+  mtu: 9000
+  vrf: InbandMgmt
+- name: Vlan3000
+  tenant: AcmeCorp
+  type: underlay_peering
+  shutdown: false
+  description: 'MLAG_PEER_L3_iBGP: vrf InbandMgmt'
+  vrf: InbandMgmt
+  mtu: 9100
+  ip_address: 10.4.0.2/31
+- name: Vlan200
+  tenant: AcmeCorp
+  description: Linknet Kubernetes FW
+  shutdown: false
+  mtu: 9000
+  ip_address_virtual: 10.20.0.1/24
+  vrf: Kubernetes
+- name: Vlan201
+  tenant: AcmeCorp
+  description: Kubernetes1
+  shutdown: false
+  mtu: 9000
+  ip_address_virtual: 10.21.0.1/24
+  vrf: Kubernetes
+  ip_helpers:
+  - ip_helper: 10.20.0.250
+- name: Vlan202
+  tenant: AcmeCorp
+  description: Kubernetes2
+  shutdown: false
+  mtu: 9000
+  ip_address_virtual: 10.22.0.1/24
+  vrf: Kubernetes
+  ip_helpers:
+  - ip_helper: 10.20.0.250
+- name: Vlan3001
+  tenant: AcmeCorp
+  type: underlay_peering
+  shutdown: false
+  description: 'MLAG_PEER_L3_iBGP: vrf Kubernetes'
+  vrf: Kubernetes
+  mtu: 9100
+  ip_address: 10.4.0.2/31
+- name: Vlan300
+  tenant: AcmeCorp
+  description: Linknet Proxmox FW
+  shutdown: false
+  mtu: 9000
+  ip_address_virtual: 10.30.0.1/24
+  vrf: Proxmox
+- name: Vlan301
+  tenant: AcmeCorp
+  description: Proxmox1
+  shutdown: false
+  mtu: 9000
+  ip_address_virtual: 10.31.0.1/24
+  vrf: Proxmox
+  ip_helpers:
+  - ip_helper: 10.30.0.250
+- name: Vlan302
+  tenant: AcmeCorp
+  description: Proxmox2
+  shutdown: false
+  mtu: 9000
+  ip_address_virtual: 10.32.0.1/24
+  vrf: Proxmox
+  ip_helpers:
+  - ip_helper: 10.30.0.250
+- name: Vlan3002
+  tenant: AcmeCorp
+  type: underlay_peering
+  shutdown: false
+  description: 'MLAG_PEER_L3_iBGP: vrf Proxmox'
+  vrf: Proxmox
+  mtu: 9100
+  ip_address: 10.4.0.2/31
+port_channel_interfaces:
+- name: Port-Channel551
+  description: MLAG_PEER_dc1-leaf4_Po551
+  type: switched
+  shutdown: false
+  mode: trunk
+  trunk_groups:
+  - LEAF_PEER_L3
+  - MLAG
+ethernet_interfaces:
+- name: Ethernet55/1
+  peer: dc1-leaf4
+  peer_interface: Ethernet55/1
+  peer_type: mlag_peer
+  description: MLAG_PEER_dc1-leaf4_Ethernet55/1
+  type: port-channel-member
+  shutdown: false
+  channel_group:
+    id: 551
+    mode: active
+- name: Ethernet56/1
+  peer: dc1-leaf4
+  peer_interface: Ethernet56/1
+  peer_type: mlag_peer
+  description: MLAG_PEER_dc1-leaf4_Ethernet56/1
+  type: port-channel-member
+  shutdown: false
+  channel_group:
+    id: 551
+    mode: active
+- name: Ethernet49/1
+  peer: dc1-spine1
+  peer_interface: Ethernet3/1
+  peer_type: spine
+  description: P2P_LINK_TO_DC1-SPINE1_Ethernet3/1
+  shutdown: false
+  mtu: 9100
+  type: routed
+  ip_address: 10.2.0.5/31
+- name: Ethernet50/1
+  peer: dc1-spine2
+  peer_interface: Ethernet3/1
+  peer_type: spine
+  description: P2P_LINK_TO_DC1-SPINE2_Ethernet3/1
+  shutdown: false
+  mtu: 9100
+  type: routed
+  ip_address: 10.2.0.7/31
+mlag_configuration:
+  domain_id: dc1-leafpair2
+  local_interface: Vlan4094
+  peer_address: 10.5.0.3
+  peer_link: Port-Channel551
+  reload_delay_mlag: '300'
+  reload_delay_non_mlag: '330'
+route_maps:
+- name: RM-MLAG-PEER-IN
+  sequence_numbers:
+  - sequence: 10
+    type: permit
+    set:
+    - origin incomplete
+    description: Make routes learned over MLAG Peer-link less preferred on spines to ensure optimal routing
+- name: RM-CONN-2-BGP
+  sequence_numbers:
+  - sequence: 10
+    type: permit
+    match:
+    - ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+- name: RM-EVPN-FILTER-AS65001
+  sequence_numbers:
+  - sequence: 10
+    type: deny
+    match:
+    - as 65001
+  - sequence: 20
+    type: permit
+loopback_interfaces:
+- name: Loopback0
+  description: EVPN_Overlay_Peering
+  shutdown: false
+  ip_address: 10.1.0.4/32
+- name: Loopback1
+  description: VTEP_VXLAN_Tunnel_Source
+  shutdown: false
+  ip_address: 10.3.0.4/32
+prefix_lists:
+- name: PL-LOOPBACKS-EVPN-OVERLAY
+  sequence_numbers:
+  - sequence: 10
+    action: permit 10.1.0.0/24 eq 32
+  - sequence: 20
+    action: permit 10.3.0.0/24 eq 32
+router_bfd:
+  multihop:
+    interval: 5000
+    min_rx: 5000
+    multiplier: 3
+ip_igmp_snooping:
+  globally_enabled: true
+ip_virtual_router_mac_address: 00:11:22:33:44:55
+vxlan_interface:
+  Vxlan1:
+    description: dc1-leaf3_VTEP
+    vxlan:
+      udp_port: 4789
+      source_interface: Loopback1
+      virtual_router_encapsulation_mac_address: mlag-system-id
+      vlans:
+      - id: 100
+        vni: 10100
+      - id: 200
+        vni: 10200
+      - id: 201
+        vni: 10201
+      - id: 202
+        vni: 10202
+      - id: 300
+        vni: 10300
+      - id: 301
+        vni: 10301
+      - id: 302
+        vni: 10302
+      - id: 10
+        vni: 10010
+      - id: 20
+        vni: 10020
+      vrfs:
+      - name: InbandMgmt
+        vni: 1
+      - name: Kubernetes
+        vni: 2
+      - name: Proxmox
+        vni: 3

@@ -56,6 +56,11 @@ all:
         DC1_LEAFS:
         DC2_LEAFS:
 
+    PORT_PROFILES:
+      children:
+        DC1_LEAFS:
+        DC2_LEAFS:
+
     DC1_LEAF1_2:
       hosts:
         dc1-leaf1:

@@ -1,0 +1,54 @@
+servers:
+  - name: "KubernetesServer3"
+    adapters:
+      - endpoint_ports: [ NIC1, NIC2 ]
+        switch_ports: [ Ethernet1, Ethernet1 ]
+        switches: [ dc2-leaf1, dc2-leaf2 ]
+        profile: Kubernetes
+        port_channel:
+          description: "KubernetesServer3"
+          mode: active
+
+  - name: "KubernetesServer4"
+    adapters:
+      - endpoint_ports: [ NIC1, NIC2 ]
+        switch_ports: [ Ethernet2, Ethernet2 ]
+        switches: [ dc2-leaf1, dc2-leaf2 ]
+        profile: Kubernetes
+        port_channel:
+          description: "KubernetesServer4"
+          mode: active
+
+  - name: "ISP1"
+    adapters:
+      - endpoint_ports: [ NIC1 ]
+        switch_ports: [ Ethernet45 ]
+        switches: [ dc2-leaf1 ]
+        profile: ISP1
+
+  - name: "ISP2"
+    adapters:
+      - endpoint_ports: [ NIC1 ]
+        switch_ports: [ Ethernet46 ]
+        switches: [ dc2-leaf2 ]
+        profile: ISP2
+
+  - name: "FW02-Outside"
+    adapters:
+      - endpoint_ports: [ NIC1, NIC2 ]
+        switch_ports: [ Ethernet47, Ethernet47 ]
+        switches: [ dc2-leaf1, dc2-leaf2 ]
+        profile: FirewallOutside
+        port_channel:
+          description: "FW02-Outside"
+          mode: active
+
+  - name: "FW02-Inside"
+    adapters:
+      - endpoint_ports: [ NIC1, NIC2 ]
+        switch_ports: [ Ethernet48, Ethernet48 ]
+        switches: [ dc2-leaf1, dc2-leaf2 ]
+        profile: FirewallInside
+        port_channel:
+          description: "FW01-Inside"
+          mode: active

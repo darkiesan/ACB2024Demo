@@ -1,0 +1,20 @@
+servers:
+  - name: "ProxmoxServer3"
+    adapters:
+      - endpoint_ports: [ NIC1, NIC2 ]
+        switch_ports: [ Ethernet1, Ethernet1 ]
+        switches: [ dc2-leaf1, dc2-leaf2 ]
+        profile: Proxmox
+        port_channel:
+          description: "ProxmoxServer3"
+          mode: active
+
+  - name: "ProxmoxServer4"
+    adapters:
+      - endpoint_ports: [ NIC1, NIC2 ]
+        switch_ports: [ Ethernet2, Ethernet2 ]
+        switches: [ dc2-leaf1, dc2-leaf2 ]
+        profile: Proxmox
+        port_channel:
+          description: "ProxmoxServer4"
+          mode: active
