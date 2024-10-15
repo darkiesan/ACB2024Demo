@@ -35,3 +35,17 @@ bfd_multihop:
   interval: 5000
   min_rx: 5000
   multiplier: 3
+
+dci_connections:
+  - name: DCI_TO_DC2
+    type: ebgp
+    remote_as: 65200
+    interfaces:
+      - name: Ethernet5
+        ipv4_address: 172.31.255.0/31
+      - name: Ethernet6
+        ipv4_address: 172.31.255.2/31
+    bgp_peers:
+      - ip_address: 172.31.255.1
+      - ip_address: 172.31.255.3
+    mtu: 9100
