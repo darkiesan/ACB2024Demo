@@ -13,6 +13,10 @@ router_bgp:
   maximum_paths:
     paths: 2
     ecmp: 2
+  redistribute:
+    connected:
+      enabled: true
+      route_map: RM-CONN-2-BGP
   updates:
     wait_install: true
   peer_groups:
@@ -25,9 +29,6 @@ router_bgp:
     peer_groups:
     - name: IPv4-UNDERLAY-PEERS
       activate: true
-  redistribute_routes:
-  - source_protocol: connected
-    route_map: RM-CONN-2-BGP
   neighbors:
   - ip_address: 10.0.6.255
     peer_group: IPv4-UNDERLAY-PEERS
@@ -56,6 +57,12 @@ vlan_internal_order:
   range:
     beginning: 3700
     ending: 3900
+aaa_root:
+  disabled: true
+config_end: true
+enable_password:
+  disabled: true
+transceiver_qsfp_default_mode_4x10: true
 spanning_tree:
   mode: none
 local_users:
@@ -76,7 +83,7 @@ vrfs:
   ip_routing: true
 management_interfaces:
 - name: Management1
-  description: oob_management
+  description: OOB_MANAGEMENT
   shutdown: false
   vrf: mgmt
   ip_address: 10.0.0.8/24
@@ -93,41 +100,45 @@ ethernet_interfaces:
   peer: dc2-leaf1
   peer_interface: Ethernet50/1
   peer_type: l3leaf
-  description: P2P_LINK_TO_DC2-LEAF1_Ethernet50/1
+  description: P2P_dc2-leaf1_Ethernet50/1
   shutdown: false
   mtu: 9100
-  type: routed
+  switchport:
+    enabled: false
   ip_address: 10.0.6.254/31
 - name: Ethernet2/1
   peer: dc2-leaf2
   peer_interface: Ethernet50/1
   peer_type: l3leaf
-  description: P2P_LINK_TO_DC2-LEAF2_Ethernet50/1
+  description: P2P_dc2-leaf2_Ethernet50/1
   shutdown: false
   mtu: 9100
-  type: routed
+  switchport:
+    enabled: false
   ip_address: 10.0.7.2/31
 - name: Ethernet3/1
   peer: dc2-leaf3
   peer_interface: Ethernet50/1
   peer_type: l3leaf
-  description: P2P_LINK_TO_DC2-LEAF3_Ethernet50/1
+  description: P2P_dc2-leaf3_Ethernet50/1
   shutdown: false
   mtu: 9100
-  type: routed
+  switchport:
+    enabled: false
   ip_address: 10.0.7.6/31
 - name: Ethernet4/1
   peer: dc2-leaf4
   peer_interface: Ethernet50/1
   peer_type: l3leaf
-  description: P2P_LINK_TO_DC2-LEAF4_Ethernet50/1
+  description: P2P_dc2-leaf4_Ethernet50/1
   shutdown: false
   mtu: 9100
-  type: routed
+  switchport:
+    enabled: false
   ip_address: 10.0.7.10/31
 loopback_interfaces:
 - name: Loopback0
-  description: EVPN_Overlay_Peering
+  description: ROUTER_ID
   shutdown: false
   ip_address: 10.0.6.1/32
 prefix_lists:

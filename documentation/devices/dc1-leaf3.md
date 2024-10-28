@@ -12,6 +12,7 @@
   - [Management API HTTP](#management-api-http)
 - [Authentication](#authentication)
   - [Local Users](#local-users)
+  - [Enable Password](#enable-password)
 - [Monitoring](#monitoring)
   - [TerminAttr Daemon](#terminattr-daemon)
   - [Logging](#logging)
@@ -69,20 +70,20 @@
 
 | Management Interface | Description | Type | VRF | IP Address | Gateway |
 | -------------------- | ----------- | ---- | --- | ---------- | ------- |
-| Management1 | oob_management | oob | mgmt | 10.0.0.5/24 | - |
+| Management1 | OOB_MANAGEMENT | oob | mgmt | 10.0.0.5/24 | - |
 
 ##### IPv6
 
 | Management Interface | Description | Type | VRF | IPv6 Address | IPv6 Gateway |
 | -------------------- | ----------- | ---- | --- | ------------ | ------------ |
-| Management1 | oob_management | oob | mgmt | - | - |
+| Management1 | OOB_MANAGEMENT | oob | mgmt | - | - |
 
 #### Management Interfaces Device Configuration
 
 ```eos
 !
 interface Management1
-   description oob_management
+   description OOB_MANAGEMENT
    no shutdown
    vrf mgmt
    ip address 10.0.0.5/24
@@ -227,6 +228,10 @@ username admin privilege 15 role network-admin secret sha512 <removed>
 username cvpadmin privilege 15 role network-admin secret sha512 <removed>
 username df privilege 15 role network-admin secret sha512 <removed>
 ```
+
+### Enable Password
+
+Enable password has been disabled
 
 ## Monitoring
 
@@ -413,11 +418,11 @@ vlan internal order ascending range 3700 3900
 | 300 | Linknet Proxmox FW | - |
 | 301 | Proxmox1 | - |
 | 302 | Proxmox2 | - |
-| 3000 | MLAG_iBGP_InbandMgmt | LEAF_PEER_L3 |
-| 3001 | MLAG_iBGP_Kubernetes | LEAF_PEER_L3 |
-| 3002 | MLAG_iBGP_Proxmox | LEAF_PEER_L3 |
-| 4093 | LEAF_PEER_L3 | LEAF_PEER_L3 |
-| 4094 | MLAG_PEER | MLAG |
+| 3000 | MLAG_L3_VRF_InbandMgmt | MLAG |
+| 3001 | MLAG_L3_VRF_Kubernetes | MLAG |
+| 3002 | MLAG_L3_VRF_Proxmox | MLAG |
+| 4093 | MLAG_L3 | MLAG |
+| 4094 | MLAG | MLAG |
 
 ### VLANs Device Configuration
 
@@ -451,23 +456,23 @@ vlan 302
    name Proxmox2
 !
 vlan 3000
-   name MLAG_iBGP_InbandMgmt
-   trunk group LEAF_PEER_L3
+   name MLAG_L3_VRF_InbandMgmt
+   trunk group MLAG
 !
 vlan 3001
-   name MLAG_iBGP_Kubernetes
-   trunk group LEAF_PEER_L3
+   name MLAG_L3_VRF_Kubernetes
+   trunk group MLAG
 !
 vlan 3002
-   name MLAG_iBGP_Proxmox
-   trunk group LEAF_PEER_L3
+   name MLAG_L3_VRF_Proxmox
+   trunk group MLAG
 !
 vlan 4093
-   name LEAF_PEER_L3
-   trunk group LEAF_PEER_L3
+   name MLAG_L3
+   trunk group MLAG
 !
 vlan 4094
-   name MLAG_PEER
+   name MLAG
    trunk group MLAG
 ```
 
@@ -509,43 +514,43 @@ interface defaults
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
-| Ethernet55/1 | MLAG_PEER_dc1-leaf4_Ethernet55/1 | *trunk | *- | *- | *['LEAF_PEER_L3', 'MLAG'] | 551 |
-| Ethernet56/1 | MLAG_PEER_dc1-leaf4_Ethernet56/1 | *trunk | *- | *- | *['LEAF_PEER_L3', 'MLAG'] | 551 |
+| Ethernet55/1 | MLAG_dc1-leaf4_Ethernet55/1 | *trunk | *- | *- | *MLAG | 551 |
+| Ethernet56/1 | MLAG_dc1-leaf4_Ethernet56/1 | *trunk | *- | *- | *MLAG | 551 |
 
 *Inherited from Port-Channel Interface
 
 ##### IPv4
 
-| Interface | Description | Type | Channel Group | IP Address | VRF |  MTU | Shutdown | ACL In | ACL Out |
-| --------- | ----------- | -----| ------------- | ---------- | ----| ---- | -------- | ------ | ------- |
-| Ethernet49/1 | P2P_LINK_TO_DC1-SPINE1_Ethernet3/1 | routed | - | 10.0.2.5/31 | default | 9100 | False | - | - |
-| Ethernet50/1 | P2P_LINK_TO_DC1-SPINE2_Ethernet3/1 | routed | - | 10.0.2.7/31 | default | 9100 | False | - | - |
+| Interface | Description | Channel Group | IP Address | VRF |  MTU | Shutdown | ACL In | ACL Out |
+| --------- | ----------- | ------------- | ---------- | ----| ---- | -------- | ------ | ------- |
+| Ethernet49/1 | P2P_dc1-spine1_Ethernet3/1 | - | 10.0.2.5/31 | default | 9100 | False | - | - |
+| Ethernet50/1 | P2P_dc1-spine2_Ethernet3/1 | - | 10.0.2.7/31 | default | 9100 | False | - | - |
 
 #### Ethernet Interfaces Device Configuration
 
 ```eos
 !
 interface Ethernet49/1
-   description P2P_LINK_TO_DC1-SPINE1_Ethernet3/1
+   description P2P_dc1-spine1_Ethernet3/1
    no shutdown
    mtu 9100
    no switchport
    ip address 10.0.2.5/31
 !
 interface Ethernet50/1
-   description P2P_LINK_TO_DC1-SPINE2_Ethernet3/1
+   description P2P_dc1-spine2_Ethernet3/1
    no shutdown
    mtu 9100
    no switchport
    ip address 10.0.2.7/31
 !
 interface Ethernet55/1
-   description MLAG_PEER_dc1-leaf4_Ethernet55/1
+   description MLAG_dc1-leaf4_Ethernet55/1
    no shutdown
    channel-group 551 mode active
 !
 interface Ethernet56/1
-   description MLAG_PEER_dc1-leaf4_Ethernet56/1
+   description MLAG_dc1-leaf4_Ethernet56/1
    no shutdown
    channel-group 551 mode active
 ```
@@ -556,21 +561,20 @@ interface Ethernet56/1
 
 ##### L2
 
-| Interface | Description | Type | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
-| --------- | ----------- | ---- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
-| Port-Channel551 | MLAG_PEER_dc1-leaf4_Po551 | switched | trunk | - | - | ['LEAF_PEER_L3', 'MLAG'] | - | - | - | - |
+| Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
+| --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
+| Port-Channel551 | MLAG_dc1-leaf4_Port-Channel551 | trunk | - | - | MLAG | - | - | - | - |
 
 #### Port-Channel Interfaces Device Configuration
 
 ```eos
 !
 interface Port-Channel551
-   description MLAG_PEER_dc1-leaf4_Po551
+   description MLAG_dc1-leaf4_Port-Channel551
    no shutdown
-   switchport
    switchport mode trunk
-   switchport trunk group LEAF_PEER_L3
    switchport trunk group MLAG
+   switchport
 ```
 
 ### Loopback Interfaces
@@ -581,27 +585,27 @@ interface Port-Channel551
 
 | Interface | Description | VRF | IP Address |
 | --------- | ----------- | --- | ---------- |
-| Loopback0 | EVPN_Overlay_Peering | default | 10.0.1.4/32 |
-| Loopback1 | VTEP_VXLAN_Tunnel_Source | default | 10.0.3.4/32 |
+| Loopback0 | ROUTER_ID | default | 10.0.1.4/32 |
+| Loopback1 | VXLAN_TUNNEL_SOURCE | default | 10.0.3.4/32 |
 
 ##### IPv6
 
 | Interface | Description | VRF | IPv6 Address |
 | --------- | ----------- | --- | ------------ |
-| Loopback0 | EVPN_Overlay_Peering | default | - |
-| Loopback1 | VTEP_VXLAN_Tunnel_Source | default | - |
+| Loopback0 | ROUTER_ID | default | - |
+| Loopback1 | VXLAN_TUNNEL_SOURCE | default | - |
 
 #### Loopback Interfaces Device Configuration
 
 ```eos
 !
 interface Loopback0
-   description EVPN_Overlay_Peering
+   description ROUTER_ID
    no shutdown
    ip address 10.0.1.4/32
 !
 interface Loopback1
-   description VTEP_VXLAN_Tunnel_Source
+   description VXLAN_TUNNEL_SOURCE
    no shutdown
    ip address 10.0.3.4/32
 ```
@@ -619,28 +623,28 @@ interface Loopback1
 | Vlan300 | Linknet Proxmox FW | Proxmox | 9000 | False |
 | Vlan301 | Proxmox1 | Proxmox | 9000 | False |
 | Vlan302 | Proxmox2 | Proxmox | 9000 | False |
-| Vlan3000 | MLAG_PEER_L3_iBGP: vrf InbandMgmt | InbandMgmt | 9100 | False |
-| Vlan3001 | MLAG_PEER_L3_iBGP: vrf Kubernetes | Kubernetes | 9100 | False |
-| Vlan3002 | MLAG_PEER_L3_iBGP: vrf Proxmox | Proxmox | 9100 | False |
-| Vlan4093 | MLAG_PEER_L3_PEERING | default | 9100 | False |
-| Vlan4094 | MLAG_PEER | default | 9100 | False |
+| Vlan3000 | MLAG_L3_VRF_InbandMgmt | InbandMgmt | 9100 | False |
+| Vlan3001 | MLAG_L3_VRF_Kubernetes | Kubernetes | 9100 | False |
+| Vlan3002 | MLAG_L3_VRF_Proxmox | Proxmox | 9100 | False |
+| Vlan4093 | MLAG_L3 | default | 9100 | False |
+| Vlan4094 | MLAG | default | 9100 | False |
 
 ##### IPv4
 
-| Interface | VRF | IP Address | IP Address Virtual | IP Router Virtual Address | VRRP | ACL In | ACL Out |
-| --------- | --- | ---------- | ------------------ | ------------------------- | ---- | ------ | ------- |
-| Vlan100 |  InbandMgmt  |  10.10.0.5/24  |  -  |  -  |  -  |  -  |  -  |
-| Vlan200 |  Kubernetes  |  -  |  10.20.0.1/24  |  -  |  -  |  -  |  -  |
-| Vlan201 |  Kubernetes  |  -  |  10.21.0.1/24  |  -  |  -  |  -  |  -  |
-| Vlan202 |  Kubernetes  |  -  |  10.22.0.1/24  |  -  |  -  |  -  |  -  |
-| Vlan300 |  Proxmox  |  -  |  10.30.0.1/24  |  -  |  -  |  -  |  -  |
-| Vlan301 |  Proxmox  |  -  |  10.31.0.1/24  |  -  |  -  |  -  |  -  |
-| Vlan302 |  Proxmox  |  -  |  10.32.0.1/24  |  -  |  -  |  -  |  -  |
-| Vlan3000 |  InbandMgmt  |  10.0.4.2/31  |  -  |  -  |  -  |  -  |  -  |
-| Vlan3001 |  Kubernetes  |  10.0.4.2/31  |  -  |  -  |  -  |  -  |  -  |
-| Vlan3002 |  Proxmox  |  10.0.4.2/31  |  -  |  -  |  -  |  -  |  -  |
-| Vlan4093 |  default  |  10.0.4.2/31  |  -  |  -  |  -  |  -  |  -  |
-| Vlan4094 |  default  |  10.0.5.2/31  |  -  |  -  |  -  |  -  |  -  |
+| Interface | VRF | IP Address | IP Address Virtual | IP Router Virtual Address | ACL In | ACL Out |
+| --------- | --- | ---------- | ------------------ | ------------------------- | ------ | ------- |
+| Vlan100 |  InbandMgmt  |  10.10.0.5/24  |  -  |  -  |  -  |  -  |
+| Vlan200 |  Kubernetes  |  -  |  10.20.0.1/24  |  -  |  -  |  -  |
+| Vlan201 |  Kubernetes  |  -  |  10.21.0.1/24  |  -  |  -  |  -  |
+| Vlan202 |  Kubernetes  |  -  |  10.22.0.1/24  |  -  |  -  |  -  |
+| Vlan300 |  Proxmox  |  -  |  10.30.0.1/24  |  -  |  -  |  -  |
+| Vlan301 |  Proxmox  |  -  |  10.31.0.1/24  |  -  |  -  |  -  |
+| Vlan302 |  Proxmox  |  -  |  10.32.0.1/24  |  -  |  -  |  -  |
+| Vlan3000 |  InbandMgmt  |  10.0.4.2/31  |  -  |  -  |  -  |  -  |
+| Vlan3001 |  Kubernetes  |  10.0.4.2/31  |  -  |  -  |  -  |  -  |
+| Vlan3002 |  Proxmox  |  10.0.4.2/31  |  -  |  -  |  -  |  -  |
+| Vlan4093 |  default  |  10.0.4.2/31  |  -  |  -  |  -  |  -  |
+| Vlan4094 |  default  |  10.0.5.2/31  |  -  |  -  |  -  |  -  |
 
 #### VLAN Interfaces Device Configuration
 
@@ -700,34 +704,34 @@ interface Vlan302
    ip address virtual 10.32.0.1/24
 !
 interface Vlan3000
-   description MLAG_PEER_L3_iBGP: vrf InbandMgmt
+   description MLAG_L3_VRF_InbandMgmt
    no shutdown
    mtu 9100
    vrf InbandMgmt
    ip address 10.0.4.2/31
 !
 interface Vlan3001
-   description MLAG_PEER_L3_iBGP: vrf Kubernetes
+   description MLAG_L3_VRF_Kubernetes
    no shutdown
    mtu 9100
    vrf Kubernetes
    ip address 10.0.4.2/31
 !
 interface Vlan3002
-   description MLAG_PEER_L3_iBGP: vrf Proxmox
+   description MLAG_L3_VRF_Proxmox
    no shutdown
    mtu 9100
    vrf Proxmox
    ip address 10.0.4.2/31
 !
 interface Vlan4093
-   description MLAG_PEER_L3_PEERING
+   description MLAG_L3
    no shutdown
    mtu 9100
    ip address 10.0.4.2/31
 !
 interface Vlan4094
-   description MLAG_PEER
+   description MLAG
    no shutdown
    mtu 9100
    no autostate
@@ -958,9 +962,9 @@ ASN Notation: asplain
 !
 router bgp 65002
    router-id 10.0.1.4
-   maximum-paths 2 ecmp 2
    update wait-install
    no bgp default ipv4-unicast
+   maximum-paths 2 ecmp 2
    distance bgp 150 200 200
    graceful-restart restart-time 300
    graceful-restart
@@ -979,17 +983,17 @@ router bgp 65002
    neighbor MLAG-IPv4-UNDERLAY-PEER remote-as 65002
    neighbor MLAG-IPv4-UNDERLAY-PEER next-hop-self
    neighbor MLAG-IPv4-UNDERLAY-PEER description dc1-leaf4
+   neighbor MLAG-IPv4-UNDERLAY-PEER route-map RM-MLAG-PEER-IN in
    neighbor MLAG-IPv4-UNDERLAY-PEER password 7 <removed>
    neighbor MLAG-IPv4-UNDERLAY-PEER send-community
    neighbor MLAG-IPv4-UNDERLAY-PEER maximum-routes 12000
-   neighbor MLAG-IPv4-UNDERLAY-PEER route-map RM-MLAG-PEER-IN in
    neighbor 10.0.1.2 peer group EVPN-OVERLAY-PEERS
    neighbor 10.0.1.2 remote-as 65001
-   neighbor 10.0.1.2 description dc1-leaf1
+   neighbor 10.0.1.2 description dc1-leaf1_Loopback0
    neighbor 10.0.1.2 route-map RM-EVPN-FILTER-AS65001 out
    neighbor 10.0.1.3 peer group EVPN-OVERLAY-PEERS
    neighbor 10.0.1.3 remote-as 65001
-   neighbor 10.0.1.3 description dc1-leaf2
+   neighbor 10.0.1.3 description dc1-leaf2_Loopback0
    neighbor 10.0.1.3 route-map RM-EVPN-FILTER-AS65001 out
    neighbor 10.0.2.4 peer group IPv4-UNDERLAY-PEERS
    neighbor 10.0.2.4 remote-as 65000
@@ -998,7 +1002,7 @@ router bgp 65002
    neighbor 10.0.2.6 remote-as 65000
    neighbor 10.0.2.6 description dc1-spine2_Ethernet3/1
    neighbor 10.0.4.3 peer group MLAG-IPv4-UNDERLAY-PEER
-   neighbor 10.0.4.3 description dc1-leaf4
+   neighbor 10.0.4.3 description dc1-leaf4_Vlan4093
    redistribute connected route-map RM-CONN-2-BGP
    !
    vlan 10
@@ -1006,14 +1010,14 @@ router bgp 65002
       route-target both 65000:10010
       redistribute learned
    !
-   vlan 100
-      rd 10.0.1.4:10100
-      route-target both 65000:10100
-      redistribute learned
-   !
    vlan 20
       rd 10.0.1.4:10020
       route-target both 65000:10020
+      redistribute learned
+   !
+   vlan 100
+      rd 10.0.1.4:10100
+      route-target both 65000:10100
       redistribute learned
    !
    vlan 200
@@ -1061,7 +1065,8 @@ router bgp 65002
       router-id 10.0.1.4
       update wait-install
       neighbor 10.0.4.3 peer group MLAG-IPv4-UNDERLAY-PEER
-      redistribute connected
+      neighbor 10.0.4.3 description dc1-leaf4_Vlan3000
+      redistribute connected route-map RM-CONN-2-BGP-VRFS
    !
    vrf Kubernetes
       rd 10.0.1.4:2
@@ -1070,7 +1075,8 @@ router bgp 65002
       router-id 10.0.1.4
       update wait-install
       neighbor 10.0.4.3 peer group MLAG-IPv4-UNDERLAY-PEER
-      redistribute connected
+      neighbor 10.0.4.3 description dc1-leaf4_Vlan3001
+      redistribute connected route-map RM-CONN-2-BGP-VRFS
    !
    vrf Proxmox
       rd 10.0.1.4:3
@@ -1079,7 +1085,8 @@ router bgp 65002
       router-id 10.0.1.4
       update wait-install
       neighbor 10.0.4.3 peer group MLAG-IPv4-UNDERLAY-PEER
-      redistribute connected
+      neighbor 10.0.4.3 description dc1-leaf4_Vlan3002
+      redistribute connected route-map RM-CONN-2-BGP-VRFS
 ```
 
 ## BFD
@@ -1128,6 +1135,12 @@ router bfd
 | 10 | permit 10.0.1.0/24 eq 32 |
 | 20 | permit 10.0.3.0/24 eq 32 |
 
+##### PL-MLAG-PEER-VRFS
+
+| Sequence | Action |
+| -------- | ------ |
+| 10 | permit 10.0.4.2/31 |
+
 #### Prefix-lists Device Configuration
 
 ```eos
@@ -1135,6 +1148,9 @@ router bfd
 ip prefix-list PL-LOOPBACKS-EVPN-OVERLAY
    seq 10 permit 10.0.1.0/24 eq 32
    seq 20 permit 10.0.3.0/24 eq 32
+!
+ip prefix-list PL-MLAG-PEER-VRFS
+   seq 10 permit 10.0.4.2/31
 ```
 
 ### Route-maps
@@ -1146,6 +1162,13 @@ ip prefix-list PL-LOOPBACKS-EVPN-OVERLAY
 | Sequence | Type | Match | Set | Sub-Route-Map | Continue |
 | -------- | ---- | ----- | --- | ------------- | -------- |
 | 10 | permit | ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY | - | - | - |
+
+##### RM-CONN-2-BGP-VRFS
+
+| Sequence | Type | Match | Set | Sub-Route-Map | Continue |
+| -------- | ---- | ----- | --- | ------------- | -------- |
+| 10 | deny | ip address prefix-list PL-MLAG-PEER-VRFS | - | - | - |
+| 20 | permit | - | - | - | - |
 
 ##### RM-EVPN-FILTER-AS65001
 
@@ -1166,6 +1189,11 @@ ip prefix-list PL-LOOPBACKS-EVPN-OVERLAY
 !
 route-map RM-CONN-2-BGP permit 10
    match ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+!
+route-map RM-CONN-2-BGP-VRFS deny 10
+   match ip address prefix-list PL-MLAG-PEER-VRFS
+!
+route-map RM-CONN-2-BGP-VRFS permit 20
 !
 route-map RM-EVPN-FILTER-AS65001 deny 10
    match as 65001

@@ -76,11 +76,9 @@ logging:
 
 dns_domain: poc.local
 
-name_server:
-  source:
-    vrf: mgmt
-  nodes:
-    - 10.0.0.247
+ip_name_servers:
+  - ip_address: 10.0.0.247
+    vrf: "mgmt"
 
 #
 # NTP and time settings

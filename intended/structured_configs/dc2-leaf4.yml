@@ -13,6 +13,10 @@ router_bgp:
   maximum_paths:
     paths: 2
     ecmp: 2
+  redistribute:
+    connected:
+      enabled: true
+      route_map: RM-CONN-2-BGP
   updates:
     wait_install: true
   peer_groups:
@@ -50,7 +54,7 @@ router_bgp:
   - ip_address: 10.0.9.2
     peer_group: MLAG-IPv4-UNDERLAY-PEER
     peer: dc2-leaf3
-    description: dc2-leaf3
+    description: dc2-leaf3_Vlan4093
   - ip_address: 10.0.7.8
     peer_group: IPv4-UNDERLAY-PEERS
     remote_as: '65100'
@@ -64,25 +68,21 @@ router_bgp:
   - ip_address: 10.0.6.2
     peer_group: EVPN-OVERLAY-PEERS
     peer: dc2-leaf1
-    description: dc2-leaf1
+    description: dc2-leaf1_Loopback0
     remote_as: '65101'
     route_map_out: RM-EVPN-FILTER-AS65101
   - ip_address: 10.0.6.3
     peer_group: EVPN-OVERLAY-PEERS
     peer: dc2-leaf2
-    description: dc2-leaf2
+    description: dc2-leaf2_Loopback0
     remote_as: '65101'
     route_map_out: RM-EVPN-FILTER-AS65101
-  redistribute_routes:
-  - source_protocol: connected
-    route_map: RM-CONN-2-BGP
   address_family_evpn:
     peer_groups:
     - name: EVPN-OVERLAY-PEERS
       activate: true
   vrfs:
   - name: InbandMgmt
-    router_id: 10.0.6.5
     rd: 10.0.6.5:1
     route_targets:
       import:
@@ -93,15 +93,18 @@ router_bgp:
       - address_family: evpn
         route_targets:
         - '65000:1'
-    redistribute_routes:
-    - source_protocol: connected
+    router_id: 10.0.6.5
+    redistribute:
+      connected:
+        enabled: true
+        route_map: RM-CONN-2-BGP-VRFS
     neighbors:
     - ip_address: 10.0.9.2
       peer_group: MLAG-IPv4-UNDERLAY-PEER
+      description: dc2-leaf3_Vlan3000
     updates:
       wait_install: true
   - name: Kubernetes
-    router_id: 10.0.6.5
     rd: 10.0.6.5:2
     route_targets:
       import:
@@ -112,15 +115,18 @@ router_bgp:
       - address_family: evpn
         route_targets:
         - '65000:2'
-    redistribute_routes:
-    - source_protocol: connected
+    router_id: 10.0.6.5
+    redistribute:
+      connected:
+        enabled: true
+        route_map: RM-CONN-2-BGP-VRFS
     neighbors:
     - ip_address: 10.0.9.2
       peer_group: MLAG-IPv4-UNDERLAY-PEER
+      description: dc2-leaf3_Vlan3001
     updates:
       wait_install: true
   - name: Proxmox
-    router_id: 10.0.6.5
     rd: 10.0.6.5:3
     route_targets:
       import:
@@ -131,11 +137,15 @@ router_bgp:
       - address_family: evpn
         route_targets:
         - '65000:3'
-    redistribute_routes:
-    - source_protocol: connected
+    router_id: 10.0.6.5
+    redistribute:
+      connected:
+        enabled: true
+        route_map: RM-CONN-2-BGP-VRFS
     neighbors:
     - ip_address: 10.0.9.2
       peer_group: MLAG-IPv4-UNDERLAY-PEER
+      description: dc2-leaf3_Vlan3002
     updates:
       wait_install: true
   vlans:
@@ -218,6 +228,12 @@ vlan_internal_order:
   range:
     beginning: 3700
     ending: 3900
+aaa_root:
+  disabled: true
+config_end: true
+enable_password:
+  disabled: true
+transceiver_qsfp_default_mode_4x10: true
 spanning_tree:
   mode: mstp
   mst_instances:
@@ -251,7 +267,7 @@ vrfs:
   ip_routing: true
 management_interfaces:
 - name: Management1
-  description: oob_management
+  description: OOB_MANAGEMENT
   shutdown: false
   vrf: mgmt
   ip_address: 10.0.0.12/24
@@ -266,21 +282,21 @@ management_api_http:
 vlans:
 - id: 4093
   tenant: system
-  name: LEAF_PEER_L3
+  name: MLAG_L3
   trunk_groups:
-  - LEAF_PEER_L3
+  - MLAG
 - id: 4094
   tenant: system
-  name: MLAG_PEER
+  name: MLAG
   trunk_groups:
   - MLAG
 - id: 100
   name: InbandMgmt
   tenant: AcmeCorp
 - id: 3000
-  name: MLAG_iBGP_InbandMgmt
+  name: MLAG_L3_VRF_InbandMgmt
   trunk_groups:
-  - LEAF_PEER_L3
+  - MLAG
   tenant: AcmeCorp
 - id: 200
   name: Linknet Kubernetes FW
@@ -292,9 +308,9 @@ vlans:
   name: Kubernetes2
   tenant: AcmeCorp
 - id: 3001
-  name: MLAG_iBGP_Kubernetes
+  name: MLAG_L3_VRF_Kubernetes
   trunk_groups:
-  - LEAF_PEER_L3
+  - MLAG
   tenant: AcmeCorp
 - id: 300
   name: Linknet Proxmox FW
@@ -306,9 +322,9 @@ vlans:
   name: Proxmox2
   tenant: AcmeCorp
 - id: 3002
-  name: MLAG_iBGP_Proxmox
+  name: MLAG_L3_VRF_Proxmox
   trunk_groups:
-  - LEAF_PEER_L3
+  - MLAG
   tenant: AcmeCorp
 - id: 10
   name: ISP1
@@ -318,12 +334,12 @@ vlans:
   tenant: AcmeCorp
 vlan_interfaces:
 - name: Vlan4093
-  description: MLAG_PEER_L3_PEERING
+  description: MLAG_L3
   shutdown: false
   mtu: 9100
   ip_address: 10.0.9.3/31
 - name: Vlan4094
-  description: MLAG_PEER
+  description: MLAG
   shutdown: false
   no_autostate: true
   mtu: 9100
@@ -339,7 +355,7 @@ vlan_interfaces:
   tenant: AcmeCorp
   type: underlay_peering
   shutdown: false
-  description: 'MLAG_PEER_L3_iBGP: vrf InbandMgmt'
+  description: MLAG_L3_VRF_InbandMgmt
   vrf: InbandMgmt
   mtu: 9100
   ip_address: 10.0.9.3/31
@@ -372,7 +388,7 @@ vlan_interfaces:
   tenant: AcmeCorp
   type: underlay_peering
   shutdown: false
-  description: 'MLAG_PEER_L3_iBGP: vrf Kubernetes'
+  description: MLAG_L3_VRF_Kubernetes
   vrf: Kubernetes
   mtu: 9100
   ip_address: 10.0.9.3/31
@@ -405,26 +421,26 @@ vlan_interfaces:
   tenant: AcmeCorp
   type: underlay_peering
   shutdown: false
-  description: 'MLAG_PEER_L3_iBGP: vrf Proxmox'
+  description: MLAG_L3_VRF_Proxmox
   vrf: Proxmox
   mtu: 9100
   ip_address: 10.0.9.3/31
 port_channel_interfaces:
 - name: Port-Channel551
-  description: MLAG_PEER_dc2-leaf3_Po551
-  type: switched
+  description: MLAG_dc2-leaf3_Port-Channel551
+  switchport:
+    enabled: true
+    mode: trunk
+    trunk:
+      groups:
+      - MLAG
   shutdown: false
-  mode: trunk
-  trunk_groups:
-  - LEAF_PEER_L3
-  - MLAG
 ethernet_interfaces:
 - name: Ethernet55/1
   peer: dc2-leaf3
   peer_interface: Ethernet55/1
   peer_type: mlag_peer
-  description: MLAG_PEER_dc2-leaf3_Ethernet55/1
-  type: port-channel-member
+  description: MLAG_dc2-leaf3_Ethernet55/1
   shutdown: false
   channel_group:
     id: 551
@@ -433,8 +449,7 @@ ethernet_interfaces:
   peer: dc2-leaf3
   peer_interface: Ethernet56/1
   peer_type: mlag_peer
-  description: MLAG_PEER_dc2-leaf3_Ethernet56/1
-  type: port-channel-member
+  description: MLAG_dc2-leaf3_Ethernet56/1
   shutdown: false
   channel_group:
     id: 551
@@ -443,19 +458,21 @@ ethernet_interfaces:
   peer: dc2-spine1
   peer_interface: Ethernet4/1
   peer_type: spine
-  description: P2P_LINK_TO_DC2-SPINE1_Ethernet4/1
+  description: P2P_dc2-spine1_Ethernet4/1
   shutdown: false
   mtu: 9100
-  type: routed
+  switchport:
+    enabled: false
   ip_address: 10.0.7.9/31
 - name: Ethernet50/1
   peer: dc2-spine2
   peer_interface: Ethernet4/1
   peer_type: spine
-  description: P2P_LINK_TO_DC2-SPINE2_Ethernet4/1
+  description: P2P_dc2-spine2_Ethernet4/1
   shutdown: false
   mtu: 9100
-  type: routed
+  switchport:
+    enabled: false
   ip_address: 10.0.7.11/31
 mlag_configuration:
   domain_id: dc2-leafpair2
@@ -486,13 +503,21 @@ route_maps:
     - as 65101
   - sequence: 20
     type: permit
+- name: RM-CONN-2-BGP-VRFS
+  sequence_numbers:
+  - sequence: 10
+    type: deny
+    match:
+    - ip address prefix-list PL-MLAG-PEER-VRFS
+  - sequence: 20
+    type: permit
 loopback_interfaces:
 - name: Loopback0
-  description: EVPN_Overlay_Peering
+  description: ROUTER_ID
   shutdown: false
   ip_address: 10.0.6.5/32
 - name: Loopback1
-  description: VTEP_VXLAN_Tunnel_Source
+  description: VXLAN_TUNNEL_SOURCE
   shutdown: false
   ip_address: 10.0.8.4/32
 prefix_lists:
@@ -502,6 +527,10 @@ prefix_lists:
     action: permit 10.0.6.0/24 eq 32
   - sequence: 20
     action: permit 10.0.8.0/24 eq 32
+- name: PL-MLAG-PEER-VRFS
+  sequence_numbers:
+  - sequence: 10
+    action: permit 10.0.9.2/31
 router_bfd:
   multihop:
     interval: 5000
@@ -511,7 +540,7 @@ ip_igmp_snooping:
   globally_enabled: true
 ip_virtual_router_mac_address: 00:11:22:33:44:55
 vxlan_interface:
-  Vxlan1:
+  vxlan1:
     description: dc2-leaf4_VTEP
     vxlan:
       udp_port: 4789
